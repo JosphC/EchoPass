@@ -1,0 +1,25 @@
+{
+  "app": { "name": "EchoPass" },
+  "home": {
+    "title": "Plan. Ride. Arrive.",
+    "from": "Locația ta",
+    "to": "Unde mergi?",
+    "planTrip": "Plan My Trip",
+    "recentTrips": "Călătorii recente",
+    "report": "Raportează"
+  },
+  "tabs": { "home": "Home", "wallet": "Wallet", "live": "Live Map", "trips": "My Trips", "settings": "Settings" },
+  "wallet": { "title": "Wallet" },
+  "trips": { "title": "My Trips" },
+  "settings": { "title": "Settings" },
+  "live": { "title": "Live Map" },
+  "notifications": { "title": "Notificări" },
+  "inspector": { "title": "Inspector", "paid": "Plătit ✓" },
+  "planner": { "title": "Route Planner" },
+  "common": { "ok": "OK", "close": "Închide", "empty": "Nimic aici deocamdată." },
+  "onboarding": {
+    "welcomeTitle": "Bine ai venit la EchoPass",
+    "permissionsTitle": "Permisiuni",
+    "micTitle": "De ce folosim microfonul 3 secunde"
+  }
+}

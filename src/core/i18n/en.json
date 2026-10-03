@@ -1,0 +1,25 @@
+{
+  "app": { "name": "EchoPass" },
+  "home": {
+    "title": "Plan. Ride. Arrive.",
+    "from": "Your location",
+    "to": "Where to?",
+    "planTrip": "Plan My Trip",
+    "recentTrips": "Recent trips",
+    "report": "Report"
+  },
+  "tabs": { "home": "Home", "wallet": "Wallet", "live": "Live Map", "trips": "My Trips", "settings": "Settings" },
+  "wallet": { "title": "Wallet" },
+  "trips": { "title": "My Trips" },
+  "settings": { "title": "Settings" },
+  "live": { "title": "Live Map" },
+  "notifications": { "title": "Notifications" },
+  "inspector": { "title": "Inspector", "paid": "Paid ✓" },
+  "planner": { "title": "Route Planner" },
+  "common": { "ok": "OK", "close": "Close", "empty": "Nothing here yet." },
+  "onboarding": {
+    "welcomeTitle": "Welcome to EchoPass",
+    "permissionsTitle": "Permissions",
+    "micTitle": "Why we use the mic for 3 seconds"
+  }
+}
