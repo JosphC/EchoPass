@@ -1,5 +1,5 @@
-import { DAILY_CAP_RON, CHECKOUT_LOST_MS, SINGLE_FARE_RON, ULTRASOUND_LISTEN_MS } from '../src/core/config';
-import { lightColors } from '../src/core/theme';
+import { DAILY_CAP_RON, CHECKOUT_LOST_MS, SINGLE_FARE_RON, ULTRASOUND_LISTEN_MS } from '../../src/core/config';
+import { lightColors } from '../../src/core/theme';
 
 describe('phase1 constants', () => {
   it('defines detection and fare thresholds', () => {

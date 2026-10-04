@@ -1,4 +1,4 @@
-import { getLocale, setLocale, t } from '../src/core/i18n';
+import { getLocale, setLocale, t } from '../../src/core/i18n';
 
 describe('i18n', () => {
   afterEach(() => {

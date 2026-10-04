@@ -1,0 +1,60 @@
+import type { Bus, BusPosition } from '../../api/schemas/bus';
+import type { AppNotification } from '../../api/schemas/notification';
+import type { Report } from '../../api/schemas/report';
+import type { RecentTrip, SavedRoute } from '../../api/schemas/trip';
+import type { Charge, DailyCap, Pass, PaymentMethod } from '../../api/schemas/wallet';
+
+export const seedPass: Pass = {
+  id: 'pass-1',
+  holderName: 'Ion Popescu',
+  email: 'ion.popescu@echopass.ro',
+  validUntil: '2026-11-02',
+  daysLeft: 30,
+};
+
+export const seedPaymentMethod: PaymentMethod = { id: 'pm-1', brand: 'Visa', last4: '4021' };
+
+export const seedDailyCap: DailyCap = { limitRon: 8, spentRon: 6 };
+
+export const seedCharges: Charge[] = [
+  { id: 'ch-1', line: '5', amountRon: 3, chargedAt: '2026-10-03T07:42:00Z', capped: false },
+  { id: 'ch-2', line: '12', amountRon: 3, chargedAt: '2026-10-02T17:15:00Z', capped: false },
+  { id: 'ch-3', line: '32', amountRon: 2, chargedAt: '2026-10-02T08:05:00Z', capped: true },
+];
+
+export const seedBuses: Bus[] = [
+  { id: 'bus-5a', line: '5', destination: 'Piata Unirii', crowd: 2, delayMin: 4, delayReason: 'Trafic' },
+  { id: 'bus-12a', line: '12', destination: 'Gara Centrala', crowd: 1, delayMin: 0, delayReason: null },
+  { id: 'bus-32a', line: '32', destination: 'Cartier Florilor', crowd: 3, delayMin: 9, delayReason: 'Lucrari' },
+];
+
+export const seedPositions: BusPosition[] = [
+  { busId: 'bus-5a', lat: 44.4268, lng: 26.1025, nextStop: 'Piata Romana', arrivesInMin: 3, updatedAt: '2026-10-03T09:00:00Z' },
+  { busId: 'bus-12a', lat: 44.4397, lng: 26.0932, nextStop: 'Gara Centrala', arrivesInMin: 6, updatedAt: '2026-10-03T09:00:00Z' },
+  { busId: 'bus-32a', lat: 44.4156, lng: 26.1143, nextStop: 'Scoala Generala', arrivesInMin: 11, updatedAt: '2026-10-03T09:00:00Z' },
+];
+
+export const seedReports: Report[] = [
+  { id: 'rep-1', kind: 'traffic', line: '5', stopName: 'Piata Romana', confirmations: 3, expiresAt: '2026-10-03T09:20:00Z' },
+  { id: 'rep-2', kind: 'crowding', line: '32', stopName: 'Scoala Generala', confirmations: 1, expiresAt: '2026-10-03T09:20:00Z' },
+];
+
+export const seedSavedRoutes: SavedRoute[] = [
+  { id: 'sr-1', from: 'Acasa', to: 'Birou', line: '5' },
+  { id: 'sr-2', from: 'Birou', to: 'Gara Centrala', line: '12' },
+];
+
+export const seedRecentTrips: RecentTrip[] = [
+  { id: 'rt-1', from: 'Acasa', to: 'Birou', date: '2026-10-03', fareRon: 3, distanceKm: 7.2, durationMin: 18 },
+  { id: 'rt-2', from: 'Birou', to: 'Gara Centrala', date: '2026-10-02', fareRon: 3, distanceKm: 5.4, durationMin: 25 },
+  { id: 'rt-3', from: 'Gara Centrala', to: 'Piata Unirii', date: '2026-10-01', fareRon: 3, distanceKm: 12.8, durationMin: 45 },
+  { id: 'rt-4', from: 'Piata Unirii', to: 'Cartier Florilor', date: '2026-09-30', fareRon: 2, distanceKm: 3.6, durationMin: 15 },
+  { id: 'rt-5', from: 'Cartier Florilor', to: 'Acasa', date: '2026-09-29', fareRon: 3, distanceKm: 4.9, durationMin: 20 },
+];
+
+export const seedNotifications: AppNotification[] = [
+  { id: 'n-1', kind: 'charge', title: 'Plata calatorie', body: 'Linia 5: 3 lei, la coborare.', createdAt: '2026-10-03T07:42:00Z', read: false },
+  { id: 'n-2', kind: 'delay', title: 'Intarziere linia 32', body: 'Lucrari: +9 min.', createdAt: '2026-10-03T07:15:00Z', read: false },
+  { id: 'n-3', kind: 'cap', title: 'Plafon aproape atins', body: 'Ai cheltuit 6 din 8 lei azi.', createdAt: '2026-10-02T17:15:00Z', read: true },
+  { id: 'n-4', kind: 'renewal', title: 'Abonament expira', body: 'Reinnoieste in 30 de zile.', createdAt: '2026-10-01T09:00:00Z', read: true },
+];

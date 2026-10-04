@@ -1,2 +1,2 @@
-// Public API for the settings feature. Screens land in Phase 4.
-export {};
+export { SettingsGroups } from './components/SettingsGroups';
+export { useSettings, useSettingsStore } from './hooks/useSettings';

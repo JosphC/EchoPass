@@ -1,2 +1,5 @@
-// Public API for the planner feature. Implemented in Phase 5.
-export {};
+export { RouteFilters } from './components/RouteFilters';
+export { StepsList } from './components/StepsList';
+export { useRouteOptions } from './hooks/useRouteOptions';
+export { buildRouteOptions, sortOptions } from './options';
+export type { RouteFilter, RouteOption, RouteStep } from './options';

@@ -1,2 +1,13 @@
-// Public API for the map feature. Implemented in Phase 5.
-export {};
+export { BusListFallback } from './components/BusListFallback';
+export { BusPopup } from './components/BusPopup';
+export { LiveOverlays } from './components/LiveOverlays';
+export { LiveSummary } from './components/LiveSummary';
+export { StationBar } from './components/StationBar';
+export { StationSheet } from './components/StationSheet';
+export { LiveMap } from './components/LiveMap';
+export { useBuses } from './hooks/useBuses';
+export { useLiveMap } from './hooks/useLiveMap';
+export type { BusMarker } from './hooks/useLiveMap';
+export { hasMapKey } from './mapKey';
+export { loadStations, searchStations, trolleybusesAt, TROLLEYBUS_LINES } from './stations';
+export type { Station } from './stations';

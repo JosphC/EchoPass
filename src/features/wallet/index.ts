@@ -1,2 +1,3 @@
-// Public API for the wallet feature. Screens land in Phase 4.
-export {};
+export { ChargeList } from './components/ChargeList';
+export { PassCard } from './components/PassCard';
+export { useWallet } from './hooks/useWallet';

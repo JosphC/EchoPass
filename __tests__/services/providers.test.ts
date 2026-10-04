@@ -1,4 +1,4 @@
-import { getDataSource } from '../src/services/providers';
+import { getDataSource } from '../../src/services/providers';
 
 describe('providers', () => {
   it('exposes a single mock/real switch', () => {
