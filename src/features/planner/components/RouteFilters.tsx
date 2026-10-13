@@ -20,6 +20,7 @@ export function RouteFilters({ value, onChange }: RouteFiltersProps) {
 
   return (
     <Segmented
+      variant="pill"
       options={options}
       value={selected}
       onChange={(label) => {

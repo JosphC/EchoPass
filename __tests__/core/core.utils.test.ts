@@ -1,9 +1,15 @@
-import { formatMinutes, formatRon, timeAgoShort } from '../../src/core/utils/format';
+import { formatLei, formatMinutes, formatRon, formatShortDateTime, formatTime, timeAgoShort } from '../../src/core/utils/format';
+import { contrastText } from '../../src/core/utils/contrast';
+import { lineColor } from '../../src/core/theme/lineColors';
 import { haversineKm } from '../../src/core/utils/geo';
 
 describe('format utils', () => {
   it('formats lei with two decimals', () => {
     expect(formatRon(8)).toBe('8.00 lei');
+  });
+
+  it('formats lei with comma decimals in Romanian', () => {
+    expect(formatLei(3)).toBe('3,00 lei');
   });
 
   it('formats minutes', () => {
@@ -16,6 +22,25 @@ describe('format utils', () => {
     expect(timeAgoShort('2026-10-03T07:00:00Z', now)).toBe('2h');
     expect(timeAgoShort('2026-10-01T09:00:00Z', now)).toBe('2z');
     expect(timeAgoShort('2026-10-04T09:00:00Z', now)).toBe('0min');
+  });
+
+  it('formats short stamps like 24 Mar · 07:42', () => {
+    expect(formatShortDateTime('2026-03-24T07:42:00Z')).toBe('24 mar · 07:42');
+  });
+
+  it('formats wall-clock time', () => {
+    expect(formatTime('2026-10-04T09:05:00Z')).toMatch(/^\d{2}:\d{2}$/);
+  });
+
+  it('picks readable text for route colors', () => {
+    expect(contrastText('#FFFFFF')).toBe('#111827');
+    expect(contrastText('#111827')).toBe('#FFFFFF');
+    expect(contrastText('nope')).toBe('#FFFFFF');
+  });
+
+  it('assigns stable line colors', () => {
+    expect(lineColor('17')).toBe(lineColor('17'));
+    expect(lineColor('17')).toMatch(/^#[0-9a-fA-F]{6}$/);
   });
 });
 

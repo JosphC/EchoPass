@@ -1,34 +1,44 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { t } from '../../src/core/i18n';
-import { fontSizes } from '../../src/core/theme';
-import { useTheme } from '../../src/core/theme/useTheme';
-import { RecentTrips, SavedRoutes, TripsHeader, useTrips } from '../../src/features/trips';
-import { Screen, Segmented } from '../../src/ui';
+import { View } from 'react-native';
+import { useRideStore } from '../../src/features/ride';
+import {
+  LiveOnboardCard,
+  RecentTrips,
+  TripStatementModal,
+  TripsHeader,
+  TripsMonthHeader,
+  useTrips,
+  useTripsFilter,
+} from '../../src/features/trips';
+import { Screen } from '../../src/ui';
 
 export default function TripsTab() {
   const router = useRouter();
-  const { colors } = useTheme();
-  const [tab, setTab] = useState(t('trips.recent'));
-  const { savedRoutes, recentTrips } = useTrips();
-  const showingSaved = tab === t('trips.saved');
-  const count = showingSaved ? savedRoutes.length : recentTrips.length;
+  const { recentTrips } = useTrips();
+  const activeRide = useRideStore((s) => s.activeRide);
+  const filter = useTripsFilter(recentTrips);
 
   return (
-    <Screen scroll>
-      <TripsHeader onNotifications={() => router.push('/notifications')} />
-      <Segmented options={[t('trips.saved'), t('trips.recent')]} value={tab} onChange={setTab} />
-      <Text style={[styles.count, { color: colors.text }]}>
-        {count} {showingSaved ? t('trips.savedCount') : t('trips.recentCount')}
-      </Text>
-      {showingSaved ? <SavedRoutes routes={savedRoutes} /> : <RecentTrips trips={recentTrips} />}
+    <Screen scroll contentPaddingHorizontal={0} contentGap={0}>
+      <View style={{ paddingHorizontal: 16, paddingBottom: 6 }}>
+        <TripsHeader onNotifications={() => router.push('/notifications')} />
+      </View>
+      {activeRide && (!activeRide.expiresAtMs || activeRide.expiresAtMs > Date.now()) ? <LiveOnboardCard ride={activeRide} /> : null}
+      <TripsMonthHeader
+        months={filter.monthOptions}
+        selectedMonth={filter.selectedMonth}
+        onSelectMonth={filter.setSelectedMonth}
+        tripCount={filter.filteredTrips.length}
+        totalFareRon={filter.totalFare}
+        onOpenStatement={() => filter.setStatementOpen(true)}
+      />
+      <RecentTrips trips={filter.filteredTrips} onRepeat={() => router.push('/plan')} />
+      <TripStatementModal
+        visible={filter.statementOpen}
+        monthName={filter.selectedMonthName}
+        trips={filter.filteredTrips}
+        onClose={() => filter.setStatementOpen(false)}
+      />
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  count: {
-    fontSize: fontSizes.sm,
-  },
-});

@@ -1,5 +1,10 @@
 export { RouteFilters } from './components/RouteFilters';
 export { StepsList } from './components/StepsList';
+export { PlanView } from './components/PlanView';
 export { useRouteOptions } from './hooks/useRouteOptions';
 export { buildRouteOptions, sortOptions } from './options';
 export type { RouteFilter, RouteOption, RouteStep } from './options';
+export { planTransit } from './transit';
+export type { DestinationTarget, OriginPoint, TransitLeg, TransitOption } from './transit';
+export { decodePolyline6, fetchOsrmGeometry, fetchValhallaWalking, fetchWalkingGeometry, useRouteGeometry } from './routeGeometry';
+export type { RoutePolylineSegment } from './routeGeometry';

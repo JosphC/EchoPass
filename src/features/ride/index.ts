@@ -1,3 +1,4 @@
-// Public API for the ride feature (state machine + fare).
-// Full implementation lands in Phase 6; kept thin in Phase 1.
-export {};
+export { useRideStore, type DetectedVehicle, type ActiveRideState, type RideDetectionStatus } from './rideStore';
+export { useRideDetector } from './hooks/useRideDetector';
+export { BoardingPromptModal } from './components/BoardingPromptModal';
+export { BleSimulationBar } from './components/BleSimulationBar';

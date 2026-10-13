@@ -4,7 +4,7 @@ import { Pressable, Text } from 'react-native';
 import { t } from '../src/core/i18n';
 import { useTheme } from '../src/core/theme/useTheme';
 import { NotificationList, useNotifications } from '../src/features/notifications';
-import { DottedDivider, Screen, ScreenHeader } from '../src/ui';
+import { Screen, ScreenHeader } from '../src/ui';
 
 export default function NotificationsRoute() {
   const router = useRouter();
@@ -24,7 +24,6 @@ export default function NotificationsRoute() {
           </Pressable>
         }
       />
-      <DottedDivider />
       <NotificationList today={groups.today} yesterday={groups.yesterday} older={groups.older} onOpen={markRead} />
     </Screen>
   );

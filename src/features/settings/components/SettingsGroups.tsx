@@ -16,8 +16,10 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   const { colors } = useTheme();
   return (
     <View style={styles.section}>
-      <Text style={[styles.heading, { color: colors.text }]}>{title}</Text>
-      {children}
+      <Text style={[styles.heading, { color: colors.textMuted }]}>{title}</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        {children}
+      </View>
     </View>
   );
 }
@@ -47,6 +49,9 @@ export function SettingsGroups({ onEditProfile }: { onEditProfile: () => void })
     { kind: 'nav', icon: 'shield-checkmark-outline', label: t('settings.privacyPolicy'), onPress: soonPress },
     { kind: 'nav', icon: 'key-outline', label: t('settings.permissionsSettings'), onPress: openSystemSettings },
   ];
+  const payments: Row[] = [
+    { kind: 'toggle', icon: 'card-outline', label: t('settings.askBeforeCharge'), toggleKey: 'askBeforeCharge' },
+  ];
 
   const renderRow = (row: Row, key: string) =>
     row.kind === 'toggle' ? (
@@ -75,6 +80,9 @@ export function SettingsGroups({ onEditProfile }: { onEditProfile: () => void })
       <Section title={t('settings.appPrefs')}>
         <ListItem icon={icon('moon-outline')} title={t('settings.appearance')} onPress={soonPress} />
       </Section>
+      <Section title={t('settings.payments')}>
+        {payments.map((r, i) => renderRow(r, `pay-${i}`))}
+      </Section>
       <Text style={[styles.micTitle, { color: colors.text }]}>{t('settings.micTitle')}</Text>
       <Text style={[styles.micBody, { color: colors.textMuted }]}>{t('settings.micBody')}</Text>
       {soon ? <Toast message={t('common.soon')} tone="info" /> : null}
@@ -84,12 +92,26 @@ export function SettingsGroups({ onEditProfile }: { onEditProfile: () => void })
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   heading: {
-    marginBottom: spacing.sm,
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.bold,
+    marginBottom: 6,
+    marginLeft: 6,
+    fontSize: 12.5,
+    fontWeight: fontWeights.semiBold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  card: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   micTitle: {
     marginTop: spacing.md,

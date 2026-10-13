@@ -18,6 +18,7 @@ export function mapVehicleToPosition(v: StptVehicle): BusPosition {
     nextStop: v.stop,
     arrivesInMin: 0,
     updatedAt: new Date(v.timestamp).toISOString(),
+    speedKmh: v.speed,
   };
 }
 

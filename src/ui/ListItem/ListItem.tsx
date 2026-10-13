@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { fontSizes, fontWeights, spacing } from '../../core/theme';
 import { useTheme } from '../../core/theme/useTheme';
+import { ChevronRight } from '../ChevronRight/ChevronRight';
 
 interface ListItemProps {
   title: string;
@@ -20,7 +21,7 @@ export function ListItem({ title, subtitle, icon, onPress, testID }: ListItemPro
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         {subtitle ? <Text style={[styles.subtitle, { color: colors.textMuted }]}>{subtitle}</Text> : null}
       </View>
-      {onPress ? <Text style={[styles.chevron, { color: colors.textMuted }]}>{'>'}</Text> : null}
+      {onPress ? <ChevronRight size={18} /> : null}
     </View>
   );
 
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   texts: {
@@ -52,14 +53,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.medium,
+    fontSize: 15.5,
+    fontWeight: fontWeights.semiBold,
   },
   subtitle: {
     fontSize: fontSizes.sm,
-  },
-  chevron: {
-    fontSize: fontSizes.lg,
-    fontWeight: fontWeights.bold,
   },
 });

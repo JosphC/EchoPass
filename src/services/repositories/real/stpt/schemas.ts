@@ -7,6 +7,7 @@ const stptVehicleSchema = z.object({
   route: z.string().min(1),
   headsign: z.string().min(1),
   stop: z.string().min(1),
+  speed: z.number().min(0),
   timestamp: z.number().positive(),
   routeId: z.string().min(1),
 });

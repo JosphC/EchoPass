@@ -23,11 +23,19 @@ export function loadStations(): Station[] {
   return cache;
 }
 
+/** Lowercase + strip diacritics so "marasti" matches "Mărăști". */
+export function normStationText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 /** Case- and diacritic-insensitive substring search, capped for list rendering. */
 export function searchStations(stations: Station[], query: string, limit = 30): Station[] {
-  const needle = query.trim().toLowerCase();
+  const needle = normStationText(query.trim());
   if (needle.length < 2) return [];
-  return stations.filter((s) => s.name.toLowerCase().includes(needle)).slice(0, limit);
+  return stations.filter((s) => normStationText(s.name).includes(needle)).slice(0, limit);
 }
 
 /** Trolleybuses whose line serves the station (GTFS lines are authoritative). */

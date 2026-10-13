@@ -1,4 +1,5 @@
 import type { Repositories } from '../types';
+import { createWalletRepoReal } from './walletRepo.real';
 
 function todo(repo: string): never {
   throw new Error(`${repo} real repository not implemented (Phase 10 backend).`);
@@ -7,12 +8,7 @@ function todo(repo: string): never {
 /** Placeholders wired in Phase 10; screens never import these directly. */
 export function createRealRepositories(): Repositories {
   return {
-    wallet: {
-      getPass: async () => todo('Wallet'),
-      getPaymentMethod: async () => todo('Wallet'),
-      getDailyCap: async () => todo('Wallet'),
-      getCharges: async () => todo('Wallet'),
-    },
+    wallet: createWalletRepoReal(),
     bus: {
       getBuses: async () => todo('Bus'),
       getPositions: async () => todo('Bus'),
@@ -29,6 +25,9 @@ export function createRealRepositories(): Repositories {
     notification: {
       getNotifications: async () => todo('Notification'),
       markRead: async () => todo('Notification'),
+    },
+    arrivals: {
+      getArrivals: async () => todo('Arrivals'),
     },
   };
 }

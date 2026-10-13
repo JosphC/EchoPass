@@ -22,7 +22,7 @@ function Card({ item, onOpen }: { item: AppNotification; onOpen: (id: string) =>
     <Pressable
       accessibilityRole="button"
       onPress={() => onOpen(item.id)}
-      style={[styles.card, { backgroundColor: colors.card }]}
+      style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
     >
       <View style={[styles.icon, { borderColor: colors.border }]}>
         <Ionicons name="notifications-outline" size={22} color={accent} />
@@ -89,9 +89,15 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     gap: spacing.md,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 16,
     minHeight: 76,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   icon: {
     width: 48,

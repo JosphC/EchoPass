@@ -7,12 +7,12 @@ describe('i18n', () => {
 
   it('defaults to Romanian', () => {
     expect(getLocale()).toBe('ro');
-    expect(t('home.title')).toBe('Plan. Ride. Arrive.');
-    expect(t('home.from')).toBe('Locația ta');
+    expect(t('home.title')).toBe('Planifică. Mergi. Ajungi.');
+    expect(t('home.from')).toBe('Alege un punct de pornire sau dă clic pe...');
   });
 
   it('switches to English', () => {
     setLocale('en');
-    expect(t('home.from')).toBe('Your location');
+    expect(t('home.from')).toBe('Choose starting point or click on...');
   });
 });

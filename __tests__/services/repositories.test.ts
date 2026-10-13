@@ -8,8 +8,9 @@ describe('repositories (faza 3)', () => {
 
   it('mock repos return realistic typed data', async () => {
     const repos = getRepositories();
-    await expect(repos.wallet.getPass()).resolves.toMatchObject({ holderName: 'Ion Popescu' });
+    await expect(repos.wallet.listItems()).resolves.toHaveLength(3);
     await expect(repos.wallet.getDailyCap()).resolves.toMatchObject({ limitRon: 8 });
+    await expect(repos.wallet.listCharges()).resolves.toHaveLength(3);
     await expect(repos.bus.getBuses()).resolves.toHaveLength(3);
     await expect(repos.trip.getSavedRoutes()).resolves.toHaveLength(2);
     const notes = await repos.notification.getNotifications();
@@ -28,6 +29,6 @@ describe('repositories (faza 3)', () => {
 
   it('real stubs throw until the backend lands', async () => {
     const real = createRealRepositories();
-    await expect(real.wallet.getPass()).rejects.toThrow('not implemented');
+    await expect(real.wallet.listItems()).rejects.toThrow('not implemented');
   });
 });

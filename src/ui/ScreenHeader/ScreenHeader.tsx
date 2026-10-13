@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { fontSizes, fontWeights, spacing } from '../../core/theme';
 import { useTheme } from '../../core/theme/useTheme';
+import { ChevronLeft } from '../ChevronLeft/ChevronLeft';
 
 interface ScreenHeaderProps {
   title: string;
@@ -21,7 +22,9 @@ export function ScreenHeader({ title, subtitle, onBack, actionLabel, onAction, c
       <View style={styles.row}>
         {onBack ? (
           <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} style={styles.back}>
-            <Text style={[styles.backGlyph, { color: colors.text }]}>{'<'}</Text>
+            <View style={styles.backIcon}>
+              <ChevronLeft size={22} />
+            </View>
           </Pressable>
         ) : null}
         <View style={styles.titles}>
@@ -41,7 +44,7 @@ export function ScreenHeader({ title, subtitle, onBack, actionLabel, onAction, c
 
 const styles = StyleSheet.create({
   root: {
-    paddingVertical: spacing.md,
+    paddingBottom: spacing.md,
   },
   row: {
     flexDirection: 'row',
@@ -49,31 +52,35 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   back: {
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: 'center',
+    width: 44,
+    height: 44,
+    alignItems: 'flex-start',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  backGlyph: {
-    fontSize: fontSizes.xl,
-    fontWeight: fontWeights.bold,
+  backIcon: {
+    // Optical correction: the thin glyph renders with side bearings;
+    // pull it flush with the content edge (e.g. "Ieri" below).
+    marginLeft: -12,
   },
   titles: {
     flex: 1,
     gap: spacing.xs,
   },
   title: {
-    fontSize: fontSizes.lg,
+    fontSize: 24,
     fontWeight: fontWeights.bold,
+    letterSpacing: -0.4,
   },
   centered: {
     textAlign: 'center',
   },
   side: {
-    minWidth: 44,
-    minHeight: 44,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   subtitle: {
     fontSize: fontSizes.sm,

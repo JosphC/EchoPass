@@ -7,6 +7,11 @@ import { useThemeStore } from '../../src/core/theme/themeStore';
 
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn(), back: jest.fn() }) }));
 jest.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(async () => null),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
 
 function renderWithClient(ui: ReactElement) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

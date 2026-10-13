@@ -8,7 +8,9 @@ module.exports = {
     orientation: 'portrait',
     scheme: 'echopass',
     userInterfaceStyle: 'automatic',
+    icon: './assets/icon.png',
     splash: {
+      image: './assets/splash-icon.png',
       resizeMode: 'contain',
       backgroundColor: '#FFFFFF',
     },
@@ -16,6 +18,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'ro.echopass.app',
+      icon: './assets/icon.png',
       infoPlist: {
         NSBluetoothAlwaysUsageDescription:
           'EchoPass detectează autobuzul din apropiere prin Bluetooth pentru check-in automat.',
@@ -27,6 +30,11 @@ module.exports = {
     },
     android: {
       package: 'ro.echopass.app',
+      icon: './assets/icon.png',
+      adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
+        backgroundColor: '#FFFFFF',
+      },
       permissions: ['BLUETOOTH_SCAN', 'BLUETOOTH_CONNECT', 'RECORD_AUDIO', 'POST_NOTIFICATIONS', 'ACCESS_FINE_LOCATION'],
       config: {
         googleMaps: { apiKey: mapsKey },
@@ -34,6 +42,12 @@ module.exports = {
     },
     extra: {
       mapsKey,
+      eas: {
+        projectId: '0a4cc337-e293-4147-a867-7e2fca9b5959',
+      },
+    },
+    web: {
+      favicon: './assets/favicon.png',
     },
     plugins: ['expo-router', 'expo-localization', 'expo-dev-client'],
   },

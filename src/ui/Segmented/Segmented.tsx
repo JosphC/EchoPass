@@ -7,13 +7,45 @@ interface SegmentedProps {
   value: string;
   onChange: (next: string) => void;
   testID?: string;
+  variant?: 'tabs' | 'pill';
 }
 
-export function Segmented({ options, value, onChange, testID }: SegmentedProps) {
+export function Segmented({ options, value, onChange, testID, variant = 'tabs' }: SegmentedProps) {
   const { colors } = useTheme();
 
+  if (variant === 'pill') {
+    return (
+      <View testID={testID} accessibilityRole="tablist" style={[styles.pillRoot, { backgroundColor: colors.border }]}>
+        {options.map((opt) => {
+          const selected = opt === value;
+          return (
+            <Pressable
+              key={opt}
+              accessibilityRole="tab"
+              accessibilityState={{ selected }}
+              onPress={() => onChange(opt)}
+              style={[styles.pillSlot, selected && [styles.pillActive, { backgroundColor: colors.surface }]]}
+            >
+              <Text
+                style={[
+                  styles.pillLabel,
+                  {
+                    color: selected ? colors.text : colors.textMuted,
+                    fontWeight: selected ? fontWeights.bold : fontWeights.medium,
+                  },
+                ]}
+              >
+                {opt}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }
+
   return (
-    <View testID={testID} accessibilityRole="tablist" style={[styles.root, { backgroundColor: `${colors.primary}1A` }]}>
+    <View testID={testID} accessibilityRole="tablist" style={[styles.tabsRoot, { borderBottomColor: colors.border }]}>
       {options.map((opt) => {
         const selected = opt === value;
         return (
@@ -22,9 +54,20 @@ export function Segmented({ options, value, onChange, testID }: SegmentedProps) 
             accessibilityRole="tab"
             accessibilityState={{ selected }}
             onPress={() => onChange(opt)}
-            style={[styles.slot, selected && [styles.active, { backgroundColor: colors.card }]]}
+            style={styles.tabSlot}
           >
-            <Text style={[styles.label, { color: colors.primary }]}>{opt}</Text>
+            <Text
+              style={[
+                styles.tabLabel,
+                {
+                  color: selected ? colors.text : colors.textMuted,
+                  fontWeight: selected ? fontWeights.bold : fontWeights.medium,
+                },
+              ]}
+            >
+              {opt}
+            </Text>
+            {selected && <View style={[styles.tabIndicator, { backgroundColor: colors.primary }]} />}
           </Pressable>
         );
       })}
@@ -33,28 +76,51 @@ export function Segmented({ options, value, onChange, testID }: SegmentedProps) 
 }
 
 const styles = StyleSheet.create({
-  root: {
+  tabsRoot: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    backgroundColor: 'transparent',
+  },
+  tabSlot: {
+    flex: 1,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  tabLabel: {
+    fontSize: 15,
+  },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 3,
+  },
+  pillRoot: {
     flexDirection: 'row',
     borderRadius: radius.full,
-    padding: spacing.xs,
+    padding: 3,
   },
-  slot: {
+  pillSlot: {
     flex: 1,
     borderRadius: radius.full,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs,
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: 40,
     justifyContent: 'center',
   },
-  active: {
-    shadowColor: '#111827',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 3,
+  pillActive: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     elevation: 2,
   },
-  label: {
+  pillLabel: {
     fontSize: fontSizes.sm,
-    fontWeight: fontWeights.semiBold,
   },
 });
+
+

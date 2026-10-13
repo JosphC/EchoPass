@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { radius, spacing } from '../../core/theme';
+import { spacing } from '../../core/theme';
 import { useTheme } from '../../core/theme/useTheme';
 
 interface CardProps {
@@ -19,8 +19,13 @@ export function Card({ children, testID }: CardProps) {
 
 const styles = StyleSheet.create({
   root: {
-    borderRadius: radius.lg,
+    borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
     padding: spacing.lg,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
 });

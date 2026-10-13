@@ -13,3 +13,7 @@ web-build/
 *.tsbuildinfo
 .idea/
 .vscode/
+*.png
+!assets/*.png
+!logo.png
+scratch/

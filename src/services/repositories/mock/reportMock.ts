@@ -3,7 +3,11 @@ import { seedReports } from './seed';
 import type { ReportRepo } from '../types';
 
 export function createReportMock(): ReportRepo {
-  const store: Report[] = [...seedReports];
+  // Seed expiries are fixed dates: refresh on load so demo alerts stay live.
+  const store: Report[] = seedReports.map((r) => ({
+    ...r,
+    expiresAt: new Date(Date.now() + 20 * 60_000).toISOString(),
+  }));
   return {
     getReports: async () => store,
     submitReport: async (kind, line) => {

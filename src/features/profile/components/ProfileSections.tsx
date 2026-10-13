@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 import { t } from '../../../core/i18n';
-import { fontSizes, fontWeights, spacing } from '../../../core/theme';
+import { fontWeights, spacing } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 import { useThemeStore } from '../../../core/theme/themeStore';
 import { ListItem, Toggle } from '../../../ui';
@@ -22,39 +22,58 @@ export function ProfileSections({ onSoon, onSettings }: ProfileSectionsProps) {
 
   return (
     <View>
-      <Text style={[styles.heading, { color: colors.text }]}>{t('profile.preferences')}</Text>
-      <Toggle
-        icon={icon('location-outline')}
-        label={t('profile.location')}
-        value={locationSharing}
-        onValueChange={() => toggleSettings('locationSharing')}
-      />
-      <ListItem icon={icon('globe-outline')} title={t('profile.language')} onPress={onSoon} />
-      <Toggle
-        icon={icon('notifications-outline')}
-        label={t('profile.pushNotifications')}
-        value={false}
-        onValueChange={onSoon}
-      />
-      <Toggle
-        icon={icon('moon-outline')}
-        label={t('profile.darkMode')}
-        value={preference === 'dark'}
-        onValueChange={(next) => setPreference(next ? 'dark' : 'light')}
-      />
-      <Text style={[styles.heading, { color: colors.text }]}>{t('profile.other')}</Text>
-      <ListItem icon={icon('settings-outline')} title={t('profile.settings')} onPress={onSettings} />
-      <ListItem icon={icon('help-circle-outline')} title={t('profile.helpCenter')} onPress={onSoon} />
-      <ListItem icon={icon('log-out-outline')} title={t('profile.logout')} onPress={onSoon} />
+      <Text style={[styles.heading, { color: colors.textMuted }]}>{t('profile.preferences')}</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Toggle
+          icon={icon('location-outline')}
+          label={t('profile.location')}
+          value={locationSharing}
+          onValueChange={() => toggleSettings('locationSharing')}
+        />
+        <ListItem icon={icon('globe-outline')} title={t('profile.language')} onPress={onSoon} />
+        <Toggle
+          icon={icon('notifications-outline')}
+          label={t('profile.pushNotifications')}
+          value={false}
+          onValueChange={onSoon}
+        />
+        <Toggle
+          icon={icon('moon-outline')}
+          label={t('profile.darkMode')}
+          value={preference === 'dark'}
+          onValueChange={(next) => setPreference(next ? 'dark' : 'light')}
+        />
+      </View>
+
+      <Text style={[styles.heading, { color: colors.textMuted }]}>{t('profile.other')}</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <ListItem icon={icon('settings-outline')} title={t('profile.settings')} onPress={onSettings} />
+        <ListItem icon={icon('help-circle-outline')} title={t('profile.helpCenter')} onPress={onSoon} />
+        <ListItem icon={icon('log-out-outline')} title={t('profile.logout')} onPress={onSoon} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   heading: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.bold,
+    marginTop: spacing.md,
+    marginBottom: 6,
+    marginLeft: 6,
+    fontSize: 12.5,
+    fontWeight: fontWeights.semiBold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  card: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
 });

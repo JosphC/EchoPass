@@ -1,6 +1,7 @@
 export interface AppColors {
   primary: string;
   primaryDark: string;
+  primarySoft: string;
   secondary: string;
   amber: string;
   success: string;
@@ -19,6 +20,7 @@ export interface AppColors {
 export const lightColors: AppColors = {
   primary: '#3F7DF4',
   primaryDark: '#2F5FD0',
+  primarySoft: '#EAF1FE',
   secondary: '#C55221',
   amber: '#CC8800',
   success: '#16A34A',
@@ -35,20 +37,21 @@ export const lightColors: AppColors = {
 } as const;
 
 export const darkColors: AppColors = {
-  primary: '#6B9BFF',
-  primaryDark: '#3F7DF4',
+  primary: '#2563EB',
+  primaryDark: '#1D4ED8',
+  primarySoft: '#1E293B',
   secondary: '#E07B4A',
   amber: '#E0A800',
   success: '#22C55E',
   warning: '#F59E0B',
   danger: '#EF4444',
-  surface: '#111827',
-  background: '#0B1220',
-  card: '#151E30',
-  text: '#F9FAFB',
-  textMuted: '#9CA3AF',
-  border: '#243044',
-  cream: '#1A150C',
+  surface: '#1E1E1E',
+  background: '#121212',
+  card: '#202124',
+  text: '#FFFFFF',
+  textMuted: '#9AA0A6',
+  border: '#3C4043',
+  cream: '#1E1E1E',
   burntOrange: '#E07B4A',
 } as const;
 

@@ -4,7 +4,7 @@ const seed = require('../data/seed.json');
 const apiRouter = express.Router();
 
 apiRouter.get('/wallet', (req, res) => {
-  res.json({ pass: seed.pass, paymentMethod: seed.paymentMethod, dailyCap: seed.dailyCap, charges: seed.charges });
+  res.json({ items: seed.items, dailyCap: seed.dailyCap, charges: seed.charges });
 });
 apiRouter.get('/buses', (req, res) => res.json({ buses: seed.buses, positions: seed.positions }));
 apiRouter.get('/reports', (req, res) => res.json({ reports: seed.reports }));

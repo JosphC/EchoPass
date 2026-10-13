@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { t } from '../../../core/i18n';
-import { fontSizes, fontWeights, spacing } from '../../../core/theme';
+import { fontWeights } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 
 interface TripsHeaderProps {
@@ -13,11 +13,13 @@ export function TripsHeader({ onNotifications }: TripsHeaderProps) {
 
   return (
     <View style={styles.header}>
-      <View style={styles.titleRow}>
-        <Ionicons name="briefcase-outline" size={22} color={colors.primary} />
-        <Text style={[styles.title, { color: colors.text }]}>{t('trips.title')}</Text>
-      </View>
-      <Pressable accessibilityRole="button" onPress={onNotifications} style={styles.tool}>
+      <Text style={[styles.title, { color: colors.text }]}>{t('trips.heading')}</Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Notifications"
+        onPress={onNotifications}
+        style={[styles.bell, { backgroundColor: colors.card }]}
+      >
         <Ionicons name="notifications-outline" size={22} color={colors.primary} />
       </Pressable>
     </View>
@@ -30,19 +32,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
   title: {
-    fontSize: fontSizes.lg,
-    fontWeight: fontWeights.medium,
+    fontSize: 24,
+    fontWeight: fontWeights.bold,
+    letterSpacing: -0.4,
   },
-  tool: {
-    minWidth: 44,
-    minHeight: 44,
+  bell: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
 });

@@ -1,0 +1,62 @@
+import { StyleSheet } from 'react-native';
+import { fontSizes, fontWeights, spacing } from '../../../../core/theme';
+
+export const styles = StyleSheet.create({
+  card: {
+    borderRadius: 16,
+    padding: 16,
+    gap: 14,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  routeRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  trackColumn: { width: 22, height: 104, alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12 },
+  metroOrigin: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 2.5,
+    borderColor: '#2563EB',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  metroOriginDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#2563EB',
+  },
+  metroRail: {
+    flex: 1,
+    width: 2.5,
+    borderRadius: 1.25,
+    marginVertical: 4,
+  },
+  metroDestWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputsColumn: { flex: 1, gap: 10 },
+  swapButton: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  suggestionsContainer: { width: '100%', marginTop: 2 },
+  emptyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginTop: 2,
+  },
+  emptyText: { fontSize: 13.5 },
+  bottomChipsRow: { flexDirection: 'row', alignItems: 'center', paddingLeft: 32 },
+  departureChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
+  departureText: { fontSize: 13, fontWeight: fontWeights.medium },
+  error: { fontSize: fontSizes.xs, paddingLeft: 32, marginTop: -4 },
+  searchButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, minHeight: 46, paddingHorizontal: spacing.md },
+  searchLabel: { fontSize: 15, fontWeight: fontWeights.bold, flexShrink: 1 },
+});

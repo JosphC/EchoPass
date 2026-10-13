@@ -10,6 +10,7 @@ export const reportSchema = z.object({
   stopName: z.string().min(1),
   confirmations: z.number().int().min(0),
   expiresAt: z.string().datetime(),
+  createdAt: z.string().datetime().optional(),
 });
 export type Report = z.infer<typeof reportSchema>;
 

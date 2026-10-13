@@ -20,5 +20,6 @@ export const busPositionSchema = z.object({
   nextStop: z.string().min(1),
   arrivesInMin: z.number().int().min(0),
   updatedAt: z.string().datetime(),
+  speedKmh: z.number().min(0).optional(),
 });
 export type BusPosition = z.infer<typeof busPositionSchema>;
