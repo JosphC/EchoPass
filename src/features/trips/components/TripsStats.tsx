@@ -52,11 +52,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: 2,
-    elevation: 1,
-    shadowColor: '#111827',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
   },
   label: {
     fontSize: fontSizes.sm,

@@ -60,6 +60,26 @@ export const LINE_1_STOPS: LineStationStop[] = [
   { id: '1-9', name: 'Piața Gh. Domășneanu (AEM)', durationMinFromPrev: 4, connections: ['9', '24'], scheduledTime: '3:29 PM' },
 ];
 
+/**
+ * Re-times the stops around the real boarding time ("HH:MM"): the boarded stop
+ * gets the ride start, the others shift by the travel minutes between stops.
+ * Without a parsable start the sample times are kept.
+ */
+export function timeStopsFrom(stops: LineStationStop[], boardedIdx: number, startedAt: string): LineStationStop[] {
+  const m = startedAt.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return stops;
+  const start = parseInt(m[1] ?? '0', 10) * 60 + parseInt(m[2] ?? '0', 10);
+  const cum: number[] = [];
+  stops.forEach((s, i) => cum.push((i > 0 ? (cum[i - 1] ?? 0) : 0) + (i > 0 ? s.durationMinFromPrev : 0)));
+  const base = cum[boardedIdx] ?? 0;
+  return stops.map((s, i) => {
+    const total = (((start + (cum[i] ?? 0) - base) % 1440) + 1440) % 1440;
+    const hh = String(Math.floor(total / 60)).padStart(2, '0');
+    const mm = String(total % 60).padStart(2, '0');
+    return { ...s, scheduledTime: `${hh}:${mm}` };
+  });
+}
+
 export function getLineStops(line: string): LineStationStop[] {
   if (line === '15') return LINE_15_STOPS;
   if (line === '1') return LINE_1_STOPS;

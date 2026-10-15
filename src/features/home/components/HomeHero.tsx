@@ -28,12 +28,12 @@ export function HomeHero({ name, onNotifications, nowMs = Date.now() }: HomeHero
       </Text>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Notifications"
+        accessibilityLabel={t('a11y.notifications')}
         onPress={onNotifications}
         style={[styles.bell, { backgroundColor: colors.card }]}
       >
         <Ionicons name="notifications-outline" size={19} color={colors.primary} />
-        <View style={[styles.dot, { backgroundColor: colors.danger }]} />
+        <View style={[styles.dot, { backgroundColor: colors.danger, borderColor: colors.card }]} />
       </Pressable>
     </View>
   );
@@ -57,11 +57,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
   },
   dot: {
     position: 'absolute',
@@ -71,6 +66,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 1.5,
-    borderColor: '#FFFFFF',
   },
 });

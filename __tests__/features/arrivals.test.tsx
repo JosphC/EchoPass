@@ -55,10 +55,12 @@ describe('arrivals repository', () => {
     }
   });
 
-  it('returns empty for unknown stops and honors the limit', async () => {
+  it('returns empty for unknown stops; the limit never hides a line (one row per line+direction)', async () => {
     const repo = createArrivalsMock();
     expect(await repo.getArrivals('nope', { limit: 10, windowMin: 60 }, NOW)).toEqual([]);
-    expect((await repo.getArrivals('152', { limit: 1, windowMin: 60 }, NOW)).length).toBe(1);
+    const one = await repo.getArrivals('152', { limit: 1, windowMin: 60 }, NOW);
+    const groups = new Set(one.map((a) => `${a.route.shortName}|${a.headsign}`));
+    expect(groups.size).toBe(one.length);
   });
 
   it('rejects realtime rows without a predicted time', () => {

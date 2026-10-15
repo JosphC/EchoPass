@@ -16,10 +16,13 @@ export default function NotificationsRoute() {
     <Screen scroll>
       <ScreenHeader
         title={t('notifications.title')}
-        centered
         onBack={() => router.back()}
         right={
-          <Pressable accessibilityRole="button" onPress={() => router.push('/(tabs)/settings')}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.title')}
+            onPress={() => router.push('/(tabs)/settings')}
+          >
             <Ionicons name="settings-outline" size={22} color={colors.primary} />
           </Pressable>
         }

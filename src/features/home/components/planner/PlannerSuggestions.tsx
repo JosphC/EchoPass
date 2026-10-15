@@ -16,7 +16,7 @@ export function PlannerSuggestions({
   results,
   onPick,
 }: PlannerSuggestionsProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   if (typing && results.length > 0) {
     return (
@@ -28,7 +28,7 @@ export function PlannerSuggestions({
 
   if (typing && results.length === 0) {
     return (
-      <View style={[styles.emptyContainer, { borderColor: colors.border, backgroundColor: isDark ? '#303134' : '#F8FAFC' }]}>
+      <View style={[styles.emptyContainer, { backgroundColor: colors.fill }]}>
         <Ionicons name="search-outline" size={18} color={colors.textMuted} />
         <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('home.noStations')}</Text>
       </View>

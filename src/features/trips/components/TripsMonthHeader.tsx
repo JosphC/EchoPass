@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { t } from '../../../core/i18n';
 import { fontWeights, spacing, useTheme } from '../../../core/theme';
 
 export interface MonthOption {
@@ -32,11 +33,11 @@ export function TripsMonthHeader({
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.topRow}>
-        <Text style={[styles.kicker, { color: colors.textMuted }]}>Activitate lunară</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Exportă extras" onPress={onOpenStatement} hitSlop={8}>
-          <Text style={[styles.extrasBtnText, { color: colors.primary }]}>Extras</Text>
+        <Text style={[styles.kicker, { color: colors.textMuted }]}>{t('statement.monthly')}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('statement.export')} onPress={onOpenStatement} hitSlop={8}>
+          <Text style={[styles.extrasBtnText, { color: colors.primary }]}>{t('statement.open')}</Text>
         </Pressable>
       </View>
 
@@ -55,7 +56,14 @@ export function TripsMonthHeader({
             const isSelected = m.key === selectedMonth;
             const displayName = getMonthDisplay(m.label);
             return (
-              <Pressable key={m.key} onPress={() => onSelectMonth(m.key)} style={styles.monthTab}>
+              <Pressable
+                key={m.key}
+                accessibilityRole="tab"
+                accessibilityLabel={displayName}
+                accessibilityState={{ selected: isSelected }}
+                onPress={() => onSelectMonth(m.key)}
+                style={styles.monthTab}
+              >
                 <Text
                   style={[
                     styles.monthText,
@@ -81,14 +89,8 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
     marginTop: 12,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderRadius: 24,
+    padding: 20,
     gap: 8,
   },
   topRow: {
@@ -97,10 +99,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   kicker: {
-    fontSize: 13,
-    fontWeight: fontWeights.semiBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 12.5,
+    letterSpacing: 0.2,
   },
   extrasBtnText: {
     fontSize: 14,
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: '#2563EB',
     borderRadius: 1.5,
   },
 });

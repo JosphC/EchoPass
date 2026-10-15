@@ -7,8 +7,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   // Splash-ul nativ era deja ascuns — cel de brand acoperă ecranul oricum.
 });
 
-const BRAND_SPLASH_MS = 1600;
-const FADE_MS = 400;
+// 2600 ms loading + 1000 ms bun venit, apoi fade ca in varianta web.
+const BRAND_SPLASH_MS = 3600;
+const FADE_MS = 450;
 
 export function BrandSplashOverlay() {
   const [done, setDone] = useState(false);
@@ -54,5 +55,6 @@ export function BrandSplashOverlay() {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#FFFFFF',
   },
 });

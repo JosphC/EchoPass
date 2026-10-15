@@ -44,14 +44,16 @@ export function StationBar({ station, mode, onMode, onOpen, onClear, onPickStati
             <Pressable
               key={m.mode}
               accessibilityRole="button"
+              accessibilityLabel={modeLabel(m.mode)}
+              accessibilityState={{ selected: active }}
               onPress={() => {
                 onMode(m.mode);
                 if (m.mode === 'stations') onOpen();
               }}
-              style={[styles.chip, { backgroundColor: active ? colors.primary : colors.card, borderColor: colors.border }]}
+              style={[styles.chip, { backgroundColor: active ? colors.primary : colors.chip, borderColor: colors.border }]}
             >
-              <Ionicons name={active ? m.activeIcon : m.icon} size={18} color={active ? '#FFFFFF' : colors.text} />
-              <Text style={[styles.chipLabel, { color: active ? '#FFFFFF' : colors.text }]}>{modeLabel(m.mode)}</Text>
+              <Ionicons name={active ? m.activeIcon : m.icon} size={18} color={active ? colors.onPrimary : colors.text} />
+              <Text style={[styles.chipLabel, { color: active ? colors.onPrimary : colors.text }]}>{modeLabel(m.mode)}</Text>
             </Pressable>
           );
         })}

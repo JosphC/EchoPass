@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t } from '../../../../core/i18n';
 import { useTheme } from '../../../../core/theme/useTheme';
 import { searchAllPlaces, searchLocalPlaces, type LatLng, type LocationPlace, type Station } from '../../../map';
-import { StationResults } from '../../../map/components/overlays/StationResults';
+import { StationResults, type PlaceResultItem } from '../../../map/components/overlays/StationResults';
 import type { MapMode } from '../../../map/components/overlays/StationBar';
 import { BleSimulationBar } from '../../../ride';
 import { HomeDirectionsHeader } from './HomeDirectionsHeader';
@@ -112,7 +112,7 @@ export function HomeMapOverlay({
   const showResults = focused && query.trim().length >= 2;
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
 
-  function handlePick(next: any): void {
+  function handlePick(next: PlaceResultItem): void {
     setQuery('');
     setFocused(false);
     inputRef.current?.blur();
@@ -154,7 +154,7 @@ export function HomeMapOverlay({
   return (
     <View style={[styles.topOverlay, { top: insets.top + 4 }]} pointerEvents="box-none">
       {/* Google Maps style floating search pill */}
-      <View style={[styles.searchBar, { backgroundColor: colors.card }]} pointerEvents="auto">
+      <View style={[styles.searchBar, { backgroundColor: colors.searchBar }]} pointerEvents="auto">
         <Ionicons name="search-outline" size={21} color={colors.textMuted} />
         <TextInput
           ref={inputRef}
@@ -167,14 +167,14 @@ export function HomeMapOverlay({
           onFocus={() => setFocused(true)}
         />
         {query !== '' || station ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Șterge" onPress={handleClear} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.clear')} onPress={handleClear} hitSlop={8}>
             <Ionicons name="close-circle" size={19} color={colors.textMuted} />
           </Pressable>
         ) : (
           <Ionicons name="mic-outline" size={20} color={colors.textMuted} />
         )}
-        <Pressable accessibilityRole="button" accessibilityLabel="Profil" onPress={onNotifications} style={[styles.avatarBtn, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{initial}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.profile')} onPress={onNotifications} style={[styles.avatarBtn, { backgroundColor: colors.primary }]}>
+          <Text style={[styles.avatarText, { color: colors.onPrimary }]}>{initial}</Text>
         </Pressable>
       </View>
 
@@ -195,14 +195,16 @@ export function HomeMapOverlay({
               <Pressable
                 key={m.mode}
                 accessibilityRole="button"
+                accessibilityLabel={modeLabel(m.mode)}
+                accessibilityState={{ selected: active }}
                 onPress={() => onMode(m.mode)}
                 style={[
                   styles.chip,
-                  { backgroundColor: active ? colors.primary : colors.card },
+                  { backgroundColor: active ? colors.primary : colors.chip },
                 ]}
               >
-                <Ionicons name={active ? m.activeIcon : m.icon} size={16} color={active ? '#FFFFFF' : colors.text} />
-                <Text style={[styles.chipLabel, { color: active ? '#FFFFFF' : colors.text }]}>{modeLabel(m.mode)}</Text>
+                <Ionicons name={active ? m.activeIcon : m.icon} size={16} color={active ? colors.onPrimary : colors.text} />
+                <Text style={[styles.chipLabel, { color: active ? colors.onPrimary : colors.text }]}>{modeLabel(m.mode)}</Text>
               </Pressable>
             );
           })}

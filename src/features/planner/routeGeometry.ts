@@ -11,6 +11,8 @@ export interface RoutePolylineSegment {
   coordinates: LatLng[];
   /** Exact GTFS shape path — no router enrichment needed. */
   exact?: boolean;
+  /** Transit: intermediate stops drawn as small dots on the line. */
+  stops?: LatLng[];
 }
 
 const osrmCache = new Map<string, LatLng[]>();
@@ -46,22 +48,40 @@ function haversineM(a: LatLng, b: LatLng): number {
   return haversineKm(a, b) * 1000;
 }
 
+/** Closest point of segment index `from`… of `path` to `p` (equirectangular, fine at city scale). */
+function closestOnPath(path: LatLng[], p: LatLng, from = 0): { idx: number; point: LatLng } {
+  let best = { idx: from, point: path[from], d: Infinity };
+  const kx = Math.cos((p.lat * Math.PI) / 180);
+  for (let i = from; i < path.length - 1; i++) {
+    const a = path[i];
+    const b = path[i + 1];
+    const dx = (b.lng - a.lng) * kx;
+    const dy = b.lat - a.lat;
+    const len2 = dx * dx + dy * dy;
+    const tt = len2 === 0 ? 0 : Math.max(0, Math.min(1, (((p.lng - a.lng) * kx * dx + (p.lat - a.lat) * dy) / len2)));
+    const point = { lat: a.lat + tt * dy, lng: a.lng + (tt * dx) / kx };
+    const d = haversineM(point, p);
+    if (d < best.d) best = { idx: i, point, d };
+  }
+  return best;
+}
+
 /**
  * Forces the routed path to touch the exact requested endpoints. Routers snap
- * to the road graph, so without this the drawn line starts/ends meters away
- * from the pins and looks wrong.
+ * to the road graph and GTFS shape slices start at the previous vertex, so the
+ * path is cut where it passes the stop (no spike back to an earlier point)
+ * and joined to the pin with a short connector.
  */
-function pinEndpoints(path: LatLng[], points: LatLng[]): LatLng[] {
-  if (path.length === 0) return [...points];
+export function pinEndpoints(path: LatLng[], points: LatLng[]): LatLng[] {
+  if (path.length < 2) return [...points];
   const start = points[0];
   const end = points[points.length - 1];
-  const out = [...path];
-  if (haversineM(out[0], start) > 10) out.unshift(start);
-  else out[0] = start;
-  const last = out[out.length - 1];
-  if (haversineM(last, end) > 10) out.push(end);
-  else out[out.length - 1] = end;
-  return out;
+  const head = closestOnPath(path, start);
+  const tail = closestOnPath(path, end, head.idx);
+  const middle = path.slice(head.idx + 1, tail.idx + 1);
+  const out = [start, head.point, ...middle, tail.point, end];
+  // Drop zero-length hops (pin already on the path).
+  return out.filter((q, i) => i === 0 || haversineM(out[i - 1], q) > 1);
 }
 
 function resolveCampusPedestrianCorridor(from: LatLng, to: LatLng): LatLng[] | null {
@@ -186,7 +206,12 @@ export async function fetchValhallaWalking(points: LatLng[], timeoutMs = 8000): 
   }
 }
 
-/** Walking geometry: campus shortcut → OSRM → Valhalla → straight line. */
+/**
+ * Walking geometry: campus shortcut → Valhalla → OSRM → straight line.
+ * Valhalla's pedestrian costing knows footpaths, squares and crossings; the
+ * public OSRM demo serves only the car profile (one-ways, no footpaths), so
+ * it is the fallback, not the source.
+ */
 export async function fetchWalkingGeometry(points: LatLng[]): Promise<LatLng[]> {
   if (points.length < 2) return [...points];
   if (points.length === 2) {
@@ -194,10 +219,10 @@ export async function fetchWalkingGeometry(points: LatLng[]): Promise<LatLng[]> 
     const campus = resolveCampusPedestrianCorridor(points[0], points[1]);
     if (campus) return campus;
   }
-  const viaOsrm = await fetchOsrmGeometry(points, 'walking');
-  if (viaOsrm && viaOsrm.length >= 2) return viaOsrm;
   const viaValhalla = await fetchValhallaWalking(points);
   if (viaValhalla && viaValhalla.length >= 2) return viaValhalla;
+  const viaOsrm = await fetchOsrmGeometry(points, 'walking');
+  if (viaOsrm && viaOsrm.length >= 2) return viaOsrm;
   return [...points];
 }
 
@@ -222,6 +247,7 @@ function buildFallbackSegments(
   // geometry Google Maps draws) — no car-router approximation. Otherwise they
   // follow the real trip path through intermediate stations.
   const via = chosen.viaStations ?? [];
+  const rides = chosen.legs.filter((l) => l.kind === 'ride');
   const transferIdx = chosen.transferStation ? via.findIndex((s) => s.id === chosen.transferStation?.id) : -1;
   const firstVia = transferIdx >= 0 ? via.slice(0, transferIdx) : via;
   const secondVia = transferIdx >= 0 ? via.slice(transferIdx + 1) : [];
@@ -255,6 +281,7 @@ function buildFallbackSegments(
       color: '#2563EB',
       coordinates: first.coordinates,
       exact: first.exact,
+      stops: rides[0]?.via,
     });
     const secondLeg = chosen.legs.filter((l) => l.kind === 'ride')[1];
     const second = transitCoords(
@@ -268,9 +295,10 @@ function buildFallbackSegments(
       id: `transit-2-${secondLeg?.line ?? 'next'}`,
       kind: 'transit',
       line: secondLeg?.line ?? undefined,
-      color: '#059669',
+      color: '#2563EB',
       coordinates: second.coordinates,
       exact: second.exact,
+      stops: rides[1]?.via,
     });
   } else {
     const single = transitCoords(
@@ -287,6 +315,7 @@ function buildFallbackSegments(
       color: '#2563EB',
       coordinates: single.coordinates,
       exact: single.exact,
+      stops: via,
     });
   }
 

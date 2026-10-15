@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { t } from '../../../../core/i18n';
-import { fontSizes, radius, spacing } from '../../../../core/theme';
+import { fontSizes, spacing } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
 import { Button } from '../../../../ui';
 import { detectNetwork, expiryValid, luhnValid } from '../../validation/cardValidation';
@@ -52,14 +52,14 @@ export function AddCardForm({ onSubmit, onDone }: AddCardFormProps) {
         keyboardType="number-pad"
         maxLength={19}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       <TextInput
         value={holder}
         onChangeText={setHolder}
         placeholder={t('wallet.cardHolder')}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       <TextInput
         value={expiry}
@@ -68,7 +68,7 @@ export function AddCardForm({ onSubmit, onDone }: AddCardFormProps) {
         keyboardType="number-pad"
         maxLength={5}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
       <Button title={t('wallet.addCard')} loading={busy} onPress={() => void submit()} />
@@ -81,8 +81,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderRadius: 14,
     paddingHorizontal: spacing.lg,
     minHeight: 48,
     fontSize: fontSizes.md,

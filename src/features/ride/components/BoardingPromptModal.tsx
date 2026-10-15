@@ -1,11 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SINGLE_FARE_RON } from '../../../core/config';
+import { t } from '../../../core/i18n';
 import { fontWeights, useTheme } from '../../../core/theme';
+import { findRoute } from '../../../services/repositories/gtfs/timetable';
+import { LineBadge } from '../../../ui';
 import { useWalletStore } from '../../wallet/walletStore';
 import { useRideDetector } from '../hooks/useRideDetector';
 
 export function BoardingPromptModal() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const {
     status,
     detectedVehicle,
@@ -25,8 +29,10 @@ export function BoardingPromptModal() {
   };
 
   const hasPass = items.some((i) => i.kind === 'pass');
-  const baseFare = hasPass ? 0 : 3;
-  const extraFare = (passengerCount - 1) * 3;
+  const baseFare = hasPass ? 0 : SINGLE_FARE_RON;
+  const extraFare = (passengerCount - 1) * SINGLE_FARE_RON;
+  const fareText = `${SINGLE_FARE_RON.toFixed(2).replace('.', ',')} lei`;
+  const route = findRoute(vehicle.line);
   const totalRon = baseFare + (passengerCount > 1 ? extraFare : 0);
   const totalFormatted = `${totalRon.toFixed(2).replace('.', ',')} lei`;
   const remainingBalance = Math.max(0, balanceRon - totalRon);
@@ -34,26 +40,24 @@ export function BoardingPromptModal() {
 
   const breakdownLabel = hasPass
     ? passengerCount === 1
-      ? '1 × Abonament activ'
-      : `1 ab. + ${passengerCount - 1} × 3,00 lei`
-    : `${passengerCount} × 3,00 lei`;
+      ? t('ride.passOne')
+      : `${t('ride.passShort')} + ${passengerCount - 1} × ${fareText}`
+    : `${passengerCount} × ${fareText}`;
 
   const payButtonText =
-    totalRon === 0 ? 'Validează călătoria' : `Plătește ${totalRon % 1 === 0 ? totalRon : totalRon.toFixed(2).replace('.', ',')} lei`;
+    totalRon === 0 ? t('ride.validate') : `${t('ride.pay')} ${totalRon % 1 === 0 ? totalRon : totalRon.toFixed(2).replace('.', ',')} lei`;
 
   return (
     <Modal visible={isOpen} transparent animationType="slide" onRequestClose={dismissDetection}>
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { backgroundColor: colors.scrim }]}>
         <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
-          <View style={[styles.handle, { backgroundColor: isDark ? '#5F6368' : '#D1D5DB' }]} />
+          <View style={[styles.handle, { backgroundColor: colors.handle }]} />
 
           {/* Header */}
           <View style={styles.headerRow}>
-            <View style={styles.lineBadge}>
-              <Text style={styles.lineBadgeText}>{vehicle.line}</Text>
-            </View>
+            <LineBadge shortName={vehicle.line} color={route?.color ?? undefined} textColor={route?.textColor ?? undefined} size="lg" />
             <View style={styles.headerTexts}>
-              <Text style={[styles.headerTitle, { color: colors.text }]}>Câte persoane plătești?</Text>
+              <Text style={[styles.headerTitle, { color: colors.text }]}>{t('ride.howMany')}</Text>
               <Text style={[styles.headerSub, { color: colors.textMuted }]}>{vehicle.destination}</Text>
             </View>
           </View>
@@ -62,6 +66,8 @@ export function BoardingPromptModal() {
           <View style={styles.stepperRow}>
             <Pressable
               testID="btn-decrement-passengers"
+              accessibilityRole="button"
+              accessibilityLabel={t('ride.decrease')}
               disabled={passengerCount <= 1}
               onPress={decrementPassengers}
               hitSlop={10}
@@ -69,9 +75,7 @@ export function BoardingPromptModal() {
                 styles.circleBtn,
                 styles.minusBtn,
                 {
-                  backgroundColor: isDark ? '#303134' : '#F1F4F8',
-                  borderColor: colors.border,
-                  borderWidth: isDark ? 1 : 0,
+                  backgroundColor: colors.fill,
                 },
                 passengerCount <= 1 && styles.btnDisabled,
                 pressed && { opacity: 0.7 },
@@ -80,7 +84,7 @@ export function BoardingPromptModal() {
               <Ionicons
                 name="remove"
                 size={24}
-                color={passengerCount <= 1 ? (isDark ? '#5F6368' : '#9CA3AF') : colors.text}
+                color={passengerCount <= 1 ? (colors.placeholder) : colors.text}
               />
             </Pressable>
 
@@ -89,17 +93,19 @@ export function BoardingPromptModal() {
                 {passengerCount}
               </Text>
               <Text style={[styles.countLabel, { color: colors.textMuted }]}>
-                {passengerCount === 1 ? 'persoană' : 'persoane'}
+                {passengerCount === 1 ? t('ride.person') : t('ride.people')}
               </Text>
             </View>
 
             <Pressable
               testID="btn-increment-passengers"
+              accessibilityRole="button"
+              accessibilityLabel={t('ride.increase')}
               onPress={incrementPassengers}
               hitSlop={10}
-              style={({ pressed }) => [styles.circleBtn, styles.plusBtn, pressed && { opacity: 0.85 }]}
+              style={({ pressed }) => [styles.circleBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.85 }]}
             >
-              <Ionicons name="add" size={26} color="#FFFFFF" />
+              <Ionicons name="add" size={26} color={colors.onPrimary} />
             </Pressable>
           </View>
 
@@ -108,9 +114,7 @@ export function BoardingPromptModal() {
             style={[
               styles.summaryBox,
               {
-                backgroundColor: isDark ? '#28292A' : '#F3F4F6',
-                borderColor: colors.border,
-                borderWidth: isDark ? 1 : 0,
+                backgroundColor: colors.fill,
               },
             ]}
           >
@@ -121,7 +125,7 @@ export function BoardingPromptModal() {
               </Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Sold după plată</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{t('ride.balanceAfter')}</Text>
               <Text style={[styles.summaryValue, { color: colors.text }]}>{balanceFormatted}</Text>
             </View>
           </View>
@@ -129,18 +133,22 @@ export function BoardingPromptModal() {
           {/* Action buttons */}
           <Pressable
             testID="btn-confirm-boarding"
+            accessibilityRole="button"
+            accessibilityLabel={payButtonText}
             onPress={() => void confirmBoarding()}
             style={({ pressed }) => [styles.payBtn, { backgroundColor: colors.primary }, pressed && { opacity: 0.88 }]}
           >
-            <Text style={styles.payBtnText}>{payButtonText}</Text>
+            <Text style={[styles.payBtnText, { color: colors.onPrimary }]}>{payButtonText}</Text>
           </Pressable>
 
           <Pressable
             testID="btn-ignore-boarding"
+            accessibilityRole="button"
+            accessibilityLabel={t('ride.cancel')}
             onPress={dismissDetection}
             style={({ pressed }) => [styles.cancelBtn, pressed && { opacity: 0.6 }]}
           >
-            <Text style={[styles.cancelText, { color: isDark ? '#9AA0A6' : '#4B5563' }]}>Anulează</Text>
+            <Text style={[styles.cancelText, { color: colors.textMuted }]}>{t('ride.cancel')}</Text>
           </Pressable>
         </View>
       </View>
@@ -149,29 +157,26 @@ export function BoardingPromptModal() {
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(9, 14, 29, 0.65)', justifyContent: 'flex-end' },
+  backdrop: { flex: 1, justifyContent: 'flex-end' },
   sheet: { borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 22, paddingTop: 12, paddingBottom: 24 },
-  handle: { width: 44, height: 4, borderRadius: 2, backgroundColor: '#D1D5DB', alignSelf: 'center', marginBottom: 20 },
+  handle: { width: 44, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 26 },
-  lineBadge: { width: 42, height: 42, borderRadius: 10, backgroundColor: '#2A6F86', alignItems: 'center', justifyContent: 'center' },
-  lineBadgeText: { color: '#FFFFFF', fontSize: 18, fontWeight: fontWeights.bold },
   headerTexts: { flex: 1, gap: 2 },
   headerTitle: { fontSize: 18, fontWeight: fontWeights.bold },
   headerSub: { fontSize: 13 },
   stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 36, marginBottom: 24 },
   circleBtn: { width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center' },
-  minusBtn: { backgroundColor: '#F1F4F8' },
+  minusBtn: {},
   btnDisabled: { opacity: 0.5 },
-  plusBtn: { backgroundColor: '#2563EB' },
   countCol: { alignItems: 'center', minWidth: 80 },
   countNumber: { fontSize: 44, fontWeight: fontWeights.bold, lineHeight: 48 },
   countLabel: { fontSize: 13.5, marginTop: 2 },
-  summaryBox: { borderRadius: 14, paddingHorizontal: 16, paddingVertical: 14, gap: 10, marginBottom: 18 },
+  summaryBox: { borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, gap: 10, marginBottom: 18 },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   summaryLabel: { fontSize: 13.5 },
   summaryValue: { fontSize: 14.5, fontWeight: fontWeights.bold },
-  payBtn: { height: 50, borderRadius: 14, backgroundColor: '#2563EB', alignItems: 'center', justifyContent: 'center' },
-  payBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: fontWeights.bold },
+  payBtn: { height: 50, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  payBtnText: { fontSize: 16, fontWeight: fontWeights.bold },
   cancelBtn: { alignItems: 'center', justifyContent: 'center', paddingVertical: 14 },
   cancelText: { fontSize: 14.5, fontWeight: fontWeights.bold },
 });

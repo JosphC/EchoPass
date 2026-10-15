@@ -1,11 +1,13 @@
 import { Animated, Pressable, ScrollView, View, type GestureResponderHandlers, type StyleProp, type ViewStyle } from 'react-native';
+import { t } from '../../../../core/i18n';
 import { useTheme } from '../../../../core/theme/useTheme';
 import type { LatLng, Station } from '../../../map';
 import type { TransitOption } from '../../../planner';
 import { ArrivalsBoard } from '../arrivals/ArrivalsBoard';
 import type { PlaceOrStation } from '../planner/PlannerCard';
 import { RouteOptionRow } from '../planner/RouteOptionRow';
-import { RouteOptions } from '../planner/RouteOptions';
+import { groupSameStops, RouteOptions } from '../planner/RouteOptions';
+import { TimetableNotice } from '../TimetableNotice';
 import { styles } from './homeMapStyles';
 
 export type SheetViewMode = 'station' | 'planner';
@@ -58,13 +60,14 @@ export function HomeBottomSheet({
   snapIndex = 0,
   onSnapChange,
 }: HomeBottomSheetProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const activeOrigin = searched?.from ?? origin;
   const activeDest = searched?.to ?? destination;
 
   const selectedOption =
     routeOptions?.find((o) => o.id === selectedOptionId) ?? routeOptions?.[0] ?? null;
+  const selectedAlt = groupSameStops(routeOptions ?? []).find((g) => g.option.id === selectedOption?.id)?.altLines;
 
   // Peek shows a single preview row (Google Maps place card style);
   // half/full reveal the scrollable list.
@@ -93,12 +96,12 @@ export function HomeBottomSheet({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={
-            snapIndex === 0 ? 'Extinde lista' : snapIndex === 1 ? 'Extinde pe tot ecranul' : 'Minimizează lista'
+            snapIndex === 0 ? t('a11y.expandSheet') : snapIndex === 1 ? t('a11y.expandFull') : t('a11y.collapseSheet')
           }
           onPress={cycleSnap}
           style={styles.sheetHandleHit}
         >
-          <View style={[styles.sheetHandle, { backgroundColor: isDark ? '#5F6368' : '#DADCE0' }]} />
+          <View style={[styles.sheetHandle, { backgroundColor: colors.handle }]} />
         </Pressable>
       </View>
 
@@ -127,6 +130,7 @@ export function HomeBottomSheet({
               <View style={styles.peekWrapper}>
                 <RouteOptionRow
                   option={selectedOption}
+                  altLines={selectedAlt}
                   index={0}
                   selected
                   onPress={() => onSnapChange?.(1)}
@@ -142,6 +146,7 @@ export function HomeBottomSheet({
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 24 }}
         >
+          <TimetableNotice />
           <ArrivalsBoard
             flat
             station={station}

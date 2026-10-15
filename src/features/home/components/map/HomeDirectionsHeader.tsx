@@ -35,7 +35,7 @@ export function HomeDirectionsHeader({
   onSearch,
   onHeightChange,
 }: HomeDirectionsHeaderProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [open, setOpen] = useState<OpenField>(null);
   const [activeResults, setActiveResults] = useState<LocationPlace[]>([]);
   const [activeTyping, setActiveTyping] = useState(false);
@@ -103,32 +103,35 @@ export function HomeDirectionsHeader({
         <View style={styles.dirCompactRow}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Înapoi la hartă"
+            accessibilityLabel={t('a11y.backToMap')}
             onPress={onBack}
             hitSlop={8}
-            style={[styles.backBtn, { backgroundColor: isDark ? '#303134' : '#F1F5F9' }]}
+            style={[styles.backBtn, { backgroundColor: colors.fill }]}
           >
             <Ionicons name="arrow-back" size={20} color={colors.text} />
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Editează ruta"
+            accessibilityLabel={t('a11y.editRoute')}
             onPress={() => setEditing(true)}
             style={styles.dirSummaryCol}
           >
             <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.dirSummaryOrigin, { color: colors.textMuted }]}>
               {origin.name}
             </Text>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.dirSummaryText, { color: colors.text }]}>
-              → {destination.name}
-            </Text>
+            <View style={styles.dirSummaryDestRow}>
+              <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
+              <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.dirSummaryText, { color: colors.text }]}>
+                {destination.name}
+              </Text>
+            </View>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Schimbă originea cu destinația"
+            accessibilityLabel={t('a11y.swap')}
             onPress={handleSwapPress}
             hitSlop={10}
-            style={[styles.dirSwapBtnSmall, { backgroundColor: isDark ? '#303134' : '#F1F5F9' }]}
+            style={[styles.dirSwapBtnSmall, { backgroundColor: colors.fill }]}
           >
             <Animated.View style={{ transform: [{ rotate: spin }] }}>
               <Ionicons name="swap-vertical" size={17} color={colors.primary} />
@@ -147,10 +150,10 @@ export function HomeDirectionsHeader({
       <View style={styles.dirNavRow}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Înapoi la hartă"
+          accessibilityLabel={t('a11y.backToMap')}
           onPress={onBack}
           hitSlop={8}
-          style={[styles.backBtn, { backgroundColor: isDark ? '#303134' : '#F1F5F9' }]}
+          style={[styles.backBtn, { backgroundColor: colors.fill }]}
         >
           <Ionicons name="arrow-back" size={20} color={colors.text} />
         </Pressable>
@@ -159,9 +162,9 @@ export function HomeDirectionsHeader({
 
       <View style={styles.dirBodyRow}>
         <View style={styles.dirTrackCol}>
-          <View style={styles.dirOriginDot} />
-          <View style={[styles.dirRail, { backgroundColor: isDark ? '#5F6368' : '#BFDBFE' }]} />
-          <Ionicons name="location-sharp" size={18} color="#DC2626" />
+          <View style={[styles.dirOriginDot, { backgroundColor: colors.primary }]} />
+          <View style={[styles.dirRail, { backgroundColor: colors.rail }]} />
+          <Ionicons name="location-sharp" size={18} color={colors.danger} />
         </View>
 
         <View style={styles.dirInputsCol}>
@@ -213,15 +216,13 @@ export function HomeDirectionsHeader({
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Schimbă originea cu destinația"
+          accessibilityLabel={t('a11y.swap')}
           onPress={handleSwapPress}
           hitSlop={10}
           style={({ pressed }) => [
             styles.dirSwapBtn,
             {
-              backgroundColor: isDark ? '#303134' : '#F1F5F9',
-              borderColor: isDark ? '#3C4043' : '#E2E8F0',
-              borderWidth: 1,
+              backgroundColor: colors.fill,
               opacity: pressed ? 0.75 : 1,
             },
           ]}
@@ -241,13 +242,13 @@ export function HomeDirectionsHeader({
           style={({ pressed }) => [
             styles.dirSearchBtn,
             {
-              backgroundColor: canSearch ? colors.primary : isDark ? '#303134' : '#E2E8F0',
+              backgroundColor: canSearch ? colors.primary : colors.fillDisabled,
               opacity: pressed && canSearch ? 0.88 : 1,
             },
           ]}
         >
-          <Ionicons name="search" size={17} color={canSearch ? '#FFFFFF' : colors.textMuted} />
-          <Text style={[styles.dirSearchText, { color: canSearch ? '#FFFFFF' : colors.textMuted }]}>
+          <Ionicons name="search" size={17} color={canSearch ? colors.onPrimary : colors.textMuted} />
+          <Text style={[styles.dirSearchText, { color: canSearch ? colors.onPrimary : colors.textMuted }]}>
             {searchBtnLabel}
           </Text>
         </Pressable>

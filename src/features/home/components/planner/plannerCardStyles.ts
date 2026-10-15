@@ -3,14 +3,9 @@ import { fontSizes, fontWeights, spacing } from '../../../../core/theme';
 
 export const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 16,
     gap: 14,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   routeRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   trackColumn: { width: 22, height: 104, alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12 },
@@ -19,8 +14,6 @@ export const styles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 2.5,
-    borderColor: '#2563EB',
-    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -28,7 +21,6 @@ export const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#2563EB',
   },
   metroRail: {
     flex: 1,
@@ -49,7 +41,6 @@ export const styles = StyleSheet.create({
     gap: 10,
     padding: 14,
     borderRadius: 14,
-    borderWidth: 1,
     marginTop: 2,
   },
   emptyText: { fontSize: 13.5 },
@@ -57,6 +48,6 @@ export const styles = StyleSheet.create({
   departureChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
   departureText: { fontSize: 13, fontWeight: fontWeights.medium },
   error: { fontSize: fontSizes.xs, paddingLeft: 32, marginTop: -4 },
-  searchButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, minHeight: 46, paddingHorizontal: spacing.md },
+  searchButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 999, minHeight: 48, paddingHorizontal: spacing.md },
   searchLabel: { fontSize: 15, fontWeight: fontWeights.bold, flexShrink: 1 },
 });

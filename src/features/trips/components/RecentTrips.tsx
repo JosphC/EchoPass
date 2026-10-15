@@ -31,7 +31,7 @@ interface TripGroup {
 
 /** Recent trips grouped by day: Azi / Ieri / 5 oct. */
 export function RecentTrips({ trips, onRepeat, nowMs = Date.now() }: RecentTripsProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const groups: TripGroup[] = useMemo(() => {
     const ordered = [...trips].sort((a, b) => (a.date < b.date ? 1 : -1));
     const out: TripGroup[] = [];
@@ -46,13 +46,13 @@ export function RecentTrips({ trips, onRepeat, nowMs = Date.now() }: RecentTrips
 
   if (trips.length === 0) {
     return (
-      <View style={[styles.emptyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[styles.emptyIconWrap, { backgroundColor: isDark ? '#303134' : '#F1F5F9' }]}>
+      <View style={[styles.emptyCard, { backgroundColor: colors.card }]}>
+        <View style={[styles.emptyIconWrap, { backgroundColor: colors.fill }]}>
           <Ionicons name="receipt-outline" size={26} color={colors.textMuted} />
         </View>
         <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('trips.empty')}</Text>
         <Text style={[styles.emptySub, { color: colors.textMuted }]}>
-          Nu ai călătorii înregistrate în această perioadă.
+          {t('trips.emptyPeriod')}
         </Text>
       </View>
     );
@@ -65,7 +65,7 @@ export function RecentTrips({ trips, onRepeat, nowMs = Date.now() }: RecentTrips
           <View style={styles.dateBanner}>
             <Text style={[styles.heading, { color: colors.textMuted }]}>{group.label}</Text>
           </View>
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
             {group.trips.map((trip, idx) => (
               <View key={trip.id}>
                 {idx > 0 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
@@ -92,41 +92,27 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   heading: {
-    fontSize: 12.5,
-    fontWeight: fontWeights.semiBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 13,
+    fontWeight: fontWeights.medium,
   },
   card: {
     marginHorizontal: 16,
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    marginLeft: 60,
+    marginLeft: 96,
   },
   emptyCard: {
     marginHorizontal: 16,
     marginTop: 16,
     paddingVertical: 32,
     paddingHorizontal: 20,
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   emptyIconWrap: {
     width: 52,

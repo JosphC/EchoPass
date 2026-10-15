@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { t } from '../../../../core/i18n';
 import { useTheme } from '../../../../core/theme';
 import type { LineStationStop } from '../../data/lineStations';
 import { DetourAlertCard } from './DetourAlertCard';
@@ -12,14 +12,19 @@ interface StationTimelineProps {
   lineColor?: string;
 }
 
-export function StationTimeline({
-  stops,
-  currentStopIndex,
-  boardedStopIndex = -1,
-  lineColor = '#2E7D5B',
-}: StationTimelineProps) {
-  const { colors, scheme } = useTheme();
-  const isDark = scheme === 'dark';
+/** "3:10 PM" (mock data) → "15:10": the app shows 24-hour times everywhere. */
+function to24h(raw: string): string {
+  const m = raw.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return raw;
+  let h = parseInt(m[1] ?? '0', 10);
+  if (m[3]?.toUpperCase() === 'PM' && h < 12) h += 12;
+  if (m[3]?.toUpperCase() === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2, '0')}:${m[2]}`;
+}
+
+export function StationTimeline({ stops, currentStopIndex, boardedStopIndex = -1, lineColor }: StationTimelineProps) {
+  const { colors } = useTheme();
+  const rail = lineColor ?? colors.primary;
 
   return (
     <View style={tlStyles.container}>
@@ -29,106 +34,53 @@ export function StationTimeline({
         const isPassed = index < currentStopIndex && !isBoarded;
         const isFirst = index === 0;
         const isLast = index === stops.length - 1;
+        const muted = isPassed ? colors.textMuted : colors.text;
 
         return (
           <View key={stop.id} style={tlStyles.row}>
-            {/* Left Rail Column with continuous track */}
             <View style={tlStyles.railCol}>
               <View
                 style={[
                   tlStyles.railLine,
-                  { backgroundColor: lineColor },
+                  { backgroundColor: rail },
                   isFirst && tlStyles.railLineFirst,
                   isLast && tlStyles.railLineLast,
                 ]}
               />
-              {isNext ? (
-                <View
-                  style={[
-                    tlStyles.currentRing,
-                    {
-                      borderColor: '#16A34A',
-                      backgroundColor: isDark ? '#131418' : '#FFFFFF',
-                    },
-                  ]}
-                >
-                  <View style={tlStyles.currentInnerDot} />
-                </View>
-              ) : isBoarded ? (
-                <View
-                  style={[
-                    tlStyles.boardedRing,
-                    {
-                      borderColor: lineColor,
-                      backgroundColor: isDark ? '#131418' : '#FFFFFF',
-                    },
-                  ]}
-                />
-              ) : (
-                <View
-                  style={[
-                    tlStyles.dotNode,
-                    !isDark && { borderColor: lineColor, borderWidth: 1 },
-                    isPassed && tlStyles.passedDot,
-                  ]}
-                />
-              )}
+              <View
+                style={[
+                  isNext || isBoarded ? tlStyles.bigNode : tlStyles.dotNode,
+                  { borderColor: isPassed ? colors.border : rail, backgroundColor: colors.card },
+                ]}
+              />
             </View>
 
-            {/* Right Info Column */}
             <View style={tlStyles.infoCol}>
               <View style={tlStyles.mainRow}>
                 <Text
                   numberOfLines={1}
-                  style={[
-                    tlStyles.name,
-                    { color: colors.text },
-                    isPassed && { color: colors.textMuted },
-                    isNext && { color: isDark ? '#4ADE80' : '#15803D' },
-                  ]}
+                  style={[tlStyles.name, (isNext || isBoarded) && tlStyles.nameStrong, { color: muted }]}
                 >
                   {stop.name}
                 </Text>
-                {stop.scheduledTime && (
-                  <Text
-                    style={[
-                      tlStyles.timeText,
-                      { color: colors.text },
-                      isPassed && { color: colors.textMuted },
-                    ]}
-                  >
-                    {stop.scheduledTime}
+                {stop.scheduledTime ? (
+                  <Text style={[tlStyles.timeText, { color: isNext ? colors.text : colors.textMuted }]}>
+                    {to24h(stop.scheduledTime)}
                   </Text>
-                )}
+                ) : null}
               </View>
 
-              <View style={tlStyles.statusRow}>
-                {isNext ? (
-                  <View style={tlStyles.nextBadgeRow}>
-                    <View style={tlStyles.nextBadge}>
-                      <Ionicons name="radio" size={11} color="#FFFFFF" />
-                      <Text style={tlStyles.nextBadgeText}>Următoarea stație</Text>
-                    </View>
-                    <Text style={tlStyles.nextEtaText}>în ~2 min</Text>
-                  </View>
-                ) : isBoarded ? (
-                  <View style={tlStyles.boardedBadgeRow}>
-                    <View style={tlStyles.boardedBadge}>
-                      <Text style={tlStyles.boardedBadgeText}>Urcat aici</Text>
-                    </View>
-                    <Text style={[tlStyles.statusText, { color: colors.textMuted }]}>Scheduled</Text>
-                  </View>
-                ) : (
-                  <>
-                    <Text style={[tlStyles.statusText, { color: colors.textMuted }]}>Scheduled</Text>
-                    <Ionicons name="people" size={12} color={colors.textMuted} />
-                  </>
-                )}
-              </View>
+              {isNext ? (
+                <Text style={[tlStyles.statusText, { color: colors.text }]}>
+                  {t('ride.nextStop')} · {t('ride.nextEta')}
+                </Text>
+              ) : isBoarded ? (
+                <Text style={[tlStyles.statusText, { color: colors.textMuted }]}>
+                  {t('ride.boardedHere')} · {t('home.tripScheduled')}
+                </Text>
+              ) : null}
 
               {stop.alert && <DetourAlertCard alert={stop.alert} />}
-
-              {!isLast && <View style={[tlStyles.divider, { backgroundColor: colors.border }]} />}
             </View>
           </View>
         );

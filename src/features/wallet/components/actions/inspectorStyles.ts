@@ -1,7 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { fontSizes, fontWeights, radius, spacing } from '../../../../core/theme';
 
+/**
+ * Official inspection screen: a fixed green palette, identical in light and
+ * dark mode, so an inspector always sees the same validated-ticket screen.
+ */
 export const styles = StyleSheet.create({
+  detailValueOk: { color: '#047857' },
   container: {
     flex: 1,
     backgroundColor: '#059669',
@@ -58,10 +63,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
   },
   statusTitle: {
     fontSize: fontSizes.xl,
@@ -80,10 +81,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     width: '100%',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    elevation: 5,
   },
   qrWrapper: {
     padding: 8,

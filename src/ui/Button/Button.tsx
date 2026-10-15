@@ -26,12 +26,13 @@ export function Button({ title, onPress, variant = 'primary', disabled = false, 
         : variant === 'danger'
           ? colors.danger
           : 'transparent';
-  const fg = variant === 'ghost' ? colors.primary : '#FFFFFF';
+  const fg = variant === 'ghost' ? colors.primary : colors.onPrimary;
 
   return (
     <Pressable
       testID={testID}
       accessibilityRole="button"
+      accessibilityLabel={title}
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
       onPress={onPress}

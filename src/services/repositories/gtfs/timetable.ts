@@ -1,3 +1,4 @@
+import { transitMidnightMs, transitParts } from '../../../core/utils/timezone';
 export interface TimetableRoute {
   id: string;
   shortName: string;
@@ -49,13 +50,10 @@ export function findRoute(shortName: string): TimetableRoute | null {
   return loadRoutes().find((r) => r.shortName === shortName) ?? null;
 }
 
+/** Service day of an instant on Timișoara's clock, whatever the phone's time zone. */
 function dayParts(atMs: number): { dateInt: number; weekdayIdx: number; midnightMs: number } {
-  const d = new Date(atMs);
-  return {
-    dateInt: d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(),
-    weekdayIdx: (d.getDay() + 6) % 7,
-    midnightMs: new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(),
-  };
+  const p = transitParts(atMs);
+  return { dateInt: p.year * 10000 + p.month * 100 + p.day, weekdayIdx: p.weekdayIdx, midnightMs: transitMidnightMs(atMs) };
 }
 
 function activeServices(tt: Timetable, dateInt: number, weekdayIdx: number): Set<number> {

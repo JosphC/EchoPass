@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, useWindowDimensions, View, type ListRenderItemInfo, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { t } from '../../../../core/i18n';
 import { spacing, useTheme } from '../../../../core/theme';
 import type { WalletItem } from '../../types';
 import { CarouselPage } from './CarouselPage';
@@ -14,7 +15,8 @@ interface CardStackProps {
 
 // Google Wallet style: cardul activ centrat, cu fasii egale din vecini pe ambele parti.
 const GAP = spacing.md;
-const EDGE = spacing.lg + spacing.md;
+// 40 dp margins leave a ~28 dp strip of the next card: it reads as "swipe for more".
+const EDGE = spacing.xl + spacing.lg;
 
 export function CardStack({ items, frontId, defaultSourceId, onFront, onSetDefault }: CardStackProps) {
   const { colors } = useTheme();
@@ -95,7 +97,7 @@ export function CardStack({ items, frontId, defaultSourceId, onFront, onSetDefau
       {items.length > 1 ? (
         <View style={styles.dots} testID="carousel-dots">
           {items.map((item, index) => (
-            <Pressable key={item.id} testID={`carousel-dot-${index}`} accessibilityRole="button" accessibilityLabel={`Card ${index + 1} din ${items.length}`} hitSlop={8}
+            <Pressable key={item.id} testID={`carousel-dot-${index}`} accessibilityRole="button" accessibilityLabel={`${t('wallet.card')} ${index + 1} ${t('wallet.spentOf')} ${items.length}`} hitSlop={8}
               onPress={() => {
                 setActiveIndex(index);
                 listRef.current?.scrollToOffset({ offset: index * step, animated: true });

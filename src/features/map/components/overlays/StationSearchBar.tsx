@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { t } from '../../../../core/i18n';
 import { fontSizes, spacing } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
 import { searchAllPlaces, searchLocalPlaces, type LocationPlace } from '../../places';
 import type { Station } from '../../stations';
-import { StationResults } from './StationResults';
+import { StationResults, type PlaceResultItem } from './StationResults';
 
 interface StationSearchBarProps {
   station: Station | null;
@@ -49,7 +50,7 @@ export function StationSearchBar({ station, onPickStation, onClear, onNotificati
 
   const showResults = focused && query.trim().length >= 2;
 
-  function pick(next: any): void {
+  function pick(next: PlaceResultItem): void {
     if (blurTimer.current) clearTimeout(blurTimer.current);
     setQuery('');
     setFocused(false);
@@ -76,7 +77,7 @@ export function StationSearchBar({ station, onPickStation, onClear, onNotificati
 
   return (
     <View>
-      <View style={[styles.search, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.search, { backgroundColor: colors.searchBar, borderColor: colors.border }]}>
         <Ionicons name="search-outline" size={22} color={colors.textMuted} />
         <TextInput
           ref={inputRef}
@@ -95,17 +96,17 @@ export function StationSearchBar({ station, onPickStation, onClear, onNotificati
           }}
         />
         {query !== '' || station ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Șterge căutarea" onPress={clear} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.clearSearch')} onPress={clear} hitSlop={8}>
             <Ionicons name="close-circle" size={20} color={colors.textMuted} />
           </Pressable>
         ) : null}
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <Pressable accessibilityRole="button" accessibilityLabel="Notifications" onPress={onNotifications} hitSlop={8} style={styles.bell}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.notifications')} onPress={onNotifications} hitSlop={8} style={styles.bell}>
           <Ionicons name="notifications-outline" size={22} color={colors.primary} />
           <View style={[styles.dot, { backgroundColor: colors.danger }]} />
         </Pressable>
       </View>
-      {showResults ? <StationResults results={results} onPick={pick} /> : null}
+      {showResults ? <StationResults results={results} onPick={pick} style={styles.results} /> : null}
     </View>
   );
 }
@@ -126,6 +127,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 10,
   },
+  // Dropdown one gap (8) under this 52-high bar.
+  results: { top: 60 },
   field: { flex: 1, minHeight: 44, fontSize: fontSizes.md },
   divider: { width: StyleSheet.hairlineWidth, minHeight: 28 },
   bell: { minWidth: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center' },

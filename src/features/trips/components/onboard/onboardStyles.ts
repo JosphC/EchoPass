@@ -2,43 +2,20 @@ import { StyleSheet } from 'react-native';
 import { fontWeights } from '../../../../core/theme';
 
 export const styles = StyleSheet.create({
+  // Wallet surface: side margins, 24 radius, no border or accent stripe.
   card: {
-    backgroundColor: 'transparent',
-    position: 'relative',
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 24,
     overflow: 'hidden',
-    borderBottomWidth: 1,
-  },
-  accentStripe: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4.5,
-    backgroundColor: '#2E7D5B',
   },
   headerPressable: {
-    position: 'relative',
-    paddingVertical: 14,
-    paddingLeft: 18,
-    paddingRight: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  lineBadgeWrap: {
-    backgroundColor: '#2E7D5B',
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 32,
-  },
-  lineBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: fontWeights.bold,
   },
   textBlock: {
     flex: 1,
@@ -46,41 +23,54 @@ export const styles = StyleSheet.create({
     gap: 2,
   },
   destinationText: {
-    fontSize: 15.5,
+    fontSize: 16,
     fontWeight: fontWeights.bold,
   },
   subtitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
   },
   liveDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#16A34A',
-  },
-  laBordText: {
-    fontSize: 13,
-    fontWeight: fontWeights.bold,
-    color: '#16A34A',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
   stationText: {
     fontSize: 13,
   },
+  fromText: {
+    flexShrink: 1,
+  },
+  // The next stop is the one thing worth a glance: soft inset block, line-coloured stop ring.
+  nextBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  nextRing: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 3.5,
+  },
+  nextLabel: {
+    fontSize: 12,
+  },
   nextStopHeader: {
-    fontSize: 13,
+    fontSize: 15.5,
     fontWeight: fontWeights.semiBold,
   },
+  nextEta: {
+    fontSize: 13,
+    fontWeight: fontWeights.medium,
+    marginLeft: 8,
+  },
   timelineWrap: {
-    paddingLeft: 18,
-    paddingRight: 16,
+    paddingHorizontal: 18,
     paddingBottom: 16,
   },
   togglePrevBtn: {

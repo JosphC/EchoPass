@@ -16,7 +16,7 @@ export default function ProfileRoute() {
 
   return (
     <Screen scroll>
-      <ScreenHeader title={t('profile.title')} centered onBack={() => router.back()} />
+      <ScreenHeader title={t('profile.title')} onBack={() => router.back()} />
       <ProfileHeader name={holder} email="" onEdit={() => setSoon(true)} />
       <ProfileSections onSoon={() => setSoon(true)} onSettings={() => router.push('/(tabs)/settings')} />
       {soon ? <Toast message={t('common.soon')} tone="info" /> : null}

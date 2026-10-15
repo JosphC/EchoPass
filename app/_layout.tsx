@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { BoardingPromptModal } from '../src/features/ride';
+import { BleAutoCheckIn, BoardingPromptModal } from '../src/features/ride';
 import { useTheme } from '../src/core/theme';
 import { queryClient } from '../src/services/api/queryClient';
 import { BrandSplashOverlay } from '../src/ui';
@@ -26,6 +26,7 @@ export default function RootLayout() {
           <BrandSplashOverlay />
         </View>
         <BoardingPromptModal />
+        <BleAutoCheckIn />
         <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       </QueryClientProvider>
     </SafeAreaProvider>

@@ -6,6 +6,7 @@ import { TripRow } from '../../src/features/trips/components/TripRow';
 import { TripsMonthHeader } from '../../src/features/trips/components/TripsMonthHeader';
 import { TripsStats } from '../../src/features/trips/components/TripsStats';
 import { getMonthName, getRecentMonthOptions } from '../../src/features/trips/data/monthOptions';
+import { getLineStops, timeStopsFrom } from '../../src/features/trips/data/lineStations';
 import type { RecentTrip } from '../../src/services/api/schemas/trip';
 
 jest.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
@@ -90,9 +91,8 @@ describe('trips screen', () => {
     expect(screen.getByText(/la bord/i)).toBeTruthy();
     expect(screen.getByText('15')).toBeTruthy();
     expect(screen.getByText('Poșta Mare')).toBeTruthy();
-    expect(screen.getByText(/următoarea:/i)).toBeTruthy();
     expect(screen.getByText('de la Piața Mărăști')).toBeTruthy();
-    expect(screen.getAllByText('Scheduled').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Urcat aici · Conform orarului/).length).toBeGreaterThan(0);
     expect(screen.getAllByText('Următoarea stație').length).toBeGreaterThan(0);
   });
 
@@ -113,7 +113,22 @@ describe('trips screen', () => {
     );
     expect(screen.getByText('Extras Călătorii STPT')).toBeTruthy();
     expect(screen.getByText('Octombrie 2026')).toBeTruthy();
-    expect(screen.getByText('Descarcă Extras PDF (Decont)')).toBeTruthy();
+    expect(screen.getByText('Descarcă extrasul PDF (decont)')).toBeTruthy();
   });
 });
 
+
+describe('onboard stop times', () => {
+  it('boarded stop gets the ride start, others shift by travel minutes, 24-hour', () => {
+    const stops = getLineStops('15');
+    const timed = timeStopsFrom(stops, 1, '18:48');
+    expect(timed[1]?.scheduledTime).toBe('18:48');
+    expect(timed[2]?.scheduledTime).toBe(
+      `18:${String(48 + (stops[2]?.durationMinFromPrev ?? 0)).padStart(2, '0')}`
+    );
+    expect(timed[0]?.scheduledTime).toBe(
+      `18:${String(48 - (stops[1]?.durationMinFromPrev ?? 0)).padStart(2, '0')}`
+    );
+    expect(timeStopsFrom(stops, 1, '')).toBe(stops);
+  });
+});

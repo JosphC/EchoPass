@@ -1,32 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import clustering from 'react-native-map-clustering';
-import MapView, { Marker, PROVIDER_GOOGLE, type Region } from 'react-native-maps';
+import { Camera, MapView, UserLocation, type CameraRef } from '@maplibre/maplibre-react-native';
 import { useTheme } from '../../../../core/theme/useTheme';
 import type { BusMarker } from '../../hooks/useLiveMap';
-import { hasMapKey } from '../../mapKey';
 import type { LatLng } from '../../arrivals';
 import type { Station } from '../../stations';
+import { isMapNativeAvailable, mapStyleUrl } from '../../mapStyle';
 import { BusListFallback } from './BusListFallback';
-import { BusMarkerPin } from './BusMarkerPin';
-import { ClusterPin, type ClusterPoint } from './ClusterPin';
-import { StationPin } from './StationPin';
+import { BusShapeSource } from './BusShapeSource';
+import { RoutePolylines } from './RoutePolylines';
+import { PlacePin, StationPin } from './StationPin';
+import { StationShapeSource } from './StationShapeSource';
 import { useMarkerBudget } from '../../hooks/useMarkerBudget';
 import { useLiveMapCamera } from '../../hooks/useLiveMapCamera';
-import { RoutePolylines } from './RoutePolylines';
-
-const TIMISOARA: Region = {
-  latitude: 45.7577,
-  longitude: 21.2287,
-  latitudeDelta: 0.12,
-  longitudeDelta: 0.12,
-};
-
-// react-native-map-clustering exporta via `module.exports = namespace`
-// (index.js), deci importul default poate fi `{ default: Component }`.
-// Normalizam pentru a evita "Element type is invalid: got undefined/object".
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ClusteredMapView = (clustering as any)?.default ?? (clustering as any);
 
 export interface MapPinPoint {
   lat: number;
@@ -40,11 +26,16 @@ export interface MapRouteSegment {
   line?: string;
   color: string;
   coordinates: LatLng[];
+  /** Transit: intermediate stops drawn as small dots on the line. */
+  stops?: LatLng[];
 }
 
 interface LiveMapProps {
   markers: BusMarker[];
   station: Station | null;
+  /** Stop shown in the sheet without being picked (nearest): highlighted, never flown to. */
+  highlightStation?: Station | null;
+  /** Pins for transfer/alight stops; a drawn route marks them itself (circles), so they hide then. */
   extraStations?: Station[];
   routeSegments?: MapRouteSegment[];
   routeFitCoords?: LatLng[];
@@ -58,6 +49,8 @@ interface LiveMapProps {
   onSelect: (id: string) => void;
   onLocated?: () => void;
   onMapPress?: () => void;
+  /** When set, every stop is a tappable dot (zoom ≥ 14) that opens its schedule. */
+  onStationPress?: (station: Station) => void;
   centerTrigger?: number;
   userCoords?: LatLng | null;
   routeEdgePadding?: { top: number; right: number; bottom: number; left: number };
@@ -67,6 +60,7 @@ interface LiveMapProps {
 export function LiveMap({
   markers,
   station,
+  highlightStation,
   extraStations,
   routeSegments,
   routeFitCoords,
@@ -80,16 +74,17 @@ export function LiveMap({
   onSelect,
   onLocated,
   onMapPress,
+  onStationPress,
   centerTrigger,
   userCoords,
   routeEdgePadding,
   mapPadding,
 }: LiveMapProps) {
-  const ref = useRef<MapView | null>(null);
-  const { colors } = useTheme();
+  const cameraRef = useRef<CameraRef | null>(null);
+  const { colors, isDark } = useTheme();
   const [ready, setReady] = useState(false);
-  // Mount the native map one frame after the tab transition commits, so the
-  // transition animation + input dispatch finish before Maps SDK init starts.
+  const [zoom, setZoom] = useState(11.5);
+  // Montează harta nativă un cadru mai târziu ca tranziția tabului să nu sacadeze.
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const raf = requestAnimationFrame(() => setMounted(true));
@@ -98,83 +93,70 @@ export function LiveMap({
   const markerBudget = useMarkerBudget(markers.length, ready, located, onLocated);
 
   useLiveMapCamera({
-    mapRef: ref,
+    cameraRef,
     ready,
     centerTrigger,
     userCoords,
     followed,
     routeFitCoords,
     routeEdgePadding,
+    mapPadding,
+    focusStation: onStationPress ? station : null,
   });
 
-  const handleMapRef = useCallback((map: unknown) => {
-    ref.current = map as unknown as MapView | null;
-  }, []);
+  const visible = useMemo(() => (ready ? markers.slice(0, markerBudget) : []), [markers, markerBudget, ready]);
 
-  // Stable across renders: a new closure every render would force the clustering
-  // engine to recompute + remount markers on every frame.
-  const renderCluster = useCallback(
-    (cluster: ClusterPoint) => <ClusterPin cluster={cluster} color={colors.primary} />,
-    [colors.primary],
+  const handleClusterPress = useCallback(
+    (coordinate: [number, number]) => {
+      cameraRef.current?.setCamera({
+        centerCoordinate: coordinate,
+        zoomLevel: Math.min(zoom + 2.5, 18),
+        animationDuration: 400,
+      });
+    },
+    [zoom],
   );
 
-  if (!hasMapKey()) {
-    return <BusListFallback markers={markers} onSelect={onSelect} />;
-  }
+  if (!mounted) return <View style={styles.map} />;
 
-  if (!mounted) {
-    return <View style={styles.map} />;
-  }
+  // APK fără modulul nativ MapLibre: listă, nu crash.
+  if (!isMapNativeAvailable()) return <BusListFallback markers={markers} onSelect={onSelect} />;
 
   return (
-    <ClusteredMapView
+    <MapView
       style={styles.map}
-      provider={PROVIDER_GOOGLE}
-      initialRegion={TIMISOARA}
-      showsUserLocation
-      showsMyLocationButton={false}
-      // Google Maps behaviour: keep compass/scale/toolbar, don't steal taps.
-      showsCompass
-      showsScale
-      toolbarEnabled
-      loadingEnabled
-      moveOnMarkerPress={false}
-      mapPadding={mapPadding}
-      radius={50}
-      clusterColor={colors.primary}
-      clusterTextColor="#FFFFFF"
-      onMapReady={() => setReady(true)}
-      onPress={onMapPress}
-      mapRef={handleMapRef}
-      renderCluster={renderCluster}
+      mapStyle={mapStyleUrl(isDark)}
+      compassEnabled
+      onPress={() => onMapPress?.()}
+      onDidFinishLoadingMap={() => setReady(true)}
+      onRegionDidChange={(region) => setZoom(region.properties.zoomLevel)}
     >
-      {originPin && ready ? (
-        <Marker coordinate={{ latitude: originPin.lat, longitude: originPin.lng }} title={originPin.title} description="Punct de pornire" pinColor="#2563EB" />
+      <Camera ref={cameraRef} defaultSettings={{ centerCoordinate: [21.2287, 45.7577], zoomLevel: 11.5 }} />
+      {/* Native puck: blue dot, accuracy halo and compass heading, like Google Maps. */}
+      <UserLocation visible={located} renderMode="native" androidRenderMode="compass" showsUserHeadingIndicator />
+      {onStationPress ? (
+        <StationShapeSource selectedId={(station ?? highlightStation)?.id ?? null} onPress={onStationPress} />
       ) : null}
-      {destPin && ready ? (
-        <Marker coordinate={{ latitude: destPin.lat, longitude: destPin.lng }} title={destPin.title} description="Destinație" pinColor="#DC2626" />
-      ) : null}
-      {station && ready ? <StationPin station={station} /> : null}
-      {extraStations && ready ? extraStations.map((s) => <StationPin key={s.id} station={s} />) : null}
+      <BusShapeSource
+        markers={visible}
+        selectedId={selectedId}
+        primaryColor={colors.primary}
+        onSelect={onSelect}
+        onClusterPress={handleClusterPress}
+      />
+      <PlacePin id="origin-pin" pin={originPin} color="#2563EB" />
+      <PlacePin id="dest-pin" pin={destPin} color="#DC2626" />
+      {station && !onStationPress ? <StationPin station={station} /> : null}
+      {extraStations && !routeSegments?.length ? extraStations.map((s) => <StationPin key={s.id} station={s} />) : null}
       <RoutePolylines
         ready={ready}
         routeSegments={routeSegments}
         walkPath={walkPath}
         destWalkPath={destWalkPath}
         primaryColor={colors.primary}
+        zoom={zoom}
       />
-      {ready
-        ? markers.slice(0, markerBudget).map((marker) => (
-            <BusMarkerPin
-              key={selectedId === marker.bus.id ? `${marker.bus.id}-sel` : marker.bus.id}
-              marker={marker}
-              selected={selectedId === marker.bus.id}
-              color={colors.primary}
-              onSelect={onSelect}
-            />
-          ))
-        : null}
-    </ClusteredMapView>
+    </MapView>
   );
 }
 

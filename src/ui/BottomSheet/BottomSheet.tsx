@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { radius, spacing } from '../../core/theme';
+import { t } from '../../core/i18n';
 import { useTheme } from '../../core/theme/useTheme';
 
 interface BottomSheetProps {
@@ -15,7 +16,12 @@ export function BottomSheet({ visible, onClose, children, testID }: BottomSheetP
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.scrim} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.close')}
+        onPress={onClose}
+        style={[styles.scrim, { backgroundColor: colors.scrim }]}
+      />
       <View testID={testID} style={[styles.sheet, { backgroundColor: colors.card }]}>
         <View style={[styles.handle, { backgroundColor: colors.border }]} />
         {children}
@@ -27,7 +33,6 @@ export function BottomSheet({ visible, onClose, children, testID }: BottomSheetP
 const styles = StyleSheet.create({
   scrim: {
     flex: 1,
-    backgroundColor: 'rgba(17, 24, 39, 0.45)',
   },
   sheet: {
     borderTopLeftRadius: radius.xl,

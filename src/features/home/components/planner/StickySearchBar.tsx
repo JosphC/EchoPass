@@ -24,12 +24,13 @@ export function StickySearchBar({ visible, destinationName, canSearch, onSearch 
       </Text>
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={t('home.searchRoutes')}
         accessibilityState={{ disabled: !canSearch }}
         onPress={onSearch}
         hitSlop={8}
         style={[styles.go, { backgroundColor: canSearch ? colors.primary : colors.border }]}
       >
-        <Ionicons name="arrow-forward" size={20} color={canSearch ? '#FFFFFF' : colors.textMuted} />
+        <Ionicons name="arrow-forward" size={20} color={canSearch ? colors.onPrimary : colors.textMuted} />
       </Pressable>
     </View>
   );
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     shadowColor: '#111827',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 4,
   },
   title: {

@@ -23,7 +23,7 @@ export function ProfileHeader({ name, email, onEdit }: ProfileHeaderProps) {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[styles.root, { backgroundColor: colors.card }]}>
       <View style={[styles.avatar, { backgroundColor: `${colors.primary}22` }]}>
         <Text style={[styles.initials, { color: colors.primary }]}>{initials(name)}</Text>
       </View>
@@ -41,14 +41,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderRadius: 24,
+    padding: 18,
     marginBottom: spacing.md,
   },
   avatar: {

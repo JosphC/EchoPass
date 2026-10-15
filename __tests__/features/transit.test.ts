@@ -1,5 +1,6 @@
 import { loadStations } from '../../src/features/map';
 import type { BusMarker } from '../../src/features/map';
+import { transferFareRon } from '../../src/features/planner/transitHelpers';
 import { planTransit } from '../../src/features/planner/transit';
 
 function marker(line: string, lat: number, lng: number): BusMarker {
@@ -78,7 +79,18 @@ describe('planTransit', () => {
     expect(withTransfer).toBeTruthy();
     expect(withTransfer?.transferStation).toBeTruthy();
     expect(withTransfer?.legs.filter((l) => l.kind === 'ride')[0].fromStation).toBeTruthy();
-    expect(withTransfer?.fareRon).toBe(6);
+    expect(withTransfer?.fareRon).toBe(3);
+  });
+
+  it('charges one ticket when the transfer fits in the 60 min validity', () => {
+    const first = new Date(2026, 9, 11, 12, 0, 0).getTime();
+    expect(transferFareRon(first, first + 32 * 60_000)).toBe(3);
+    expect(transferFareRon(first, first + 60 * 60_000)).toBe(3);
+  });
+
+  it('charges a second ticket when the transfer exceeds 60 min', () => {
+    const first = new Date(2026, 9, 11, 12, 0, 0).getTime();
+    expect(transferFareRon(first, first + 61 * 60_000)).toBe(6);
   });
 
   it('starts with a walk from GPS coords', () => {

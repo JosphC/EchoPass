@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { t } from '../../../core/i18n';
 import { useSettingsStore } from '../../settings';
 import { useAutoCharge } from '../../wallet';
 import { useRideStore, type DetectedVehicle } from '../rideStore';
@@ -51,7 +52,9 @@ export function useRideDetector() {
       const ticket = useRideStore.getState().activeTicket;
       if (ticket && ticket.expiresAtMs > nowMs) {
         const remainingMin = applyTransfer(vehicle, nowMs);
-        setToastMessage(`Transbordare gratuită activă · Linia ${vehicle.line} · ${remainingMin} min rămase`);
+        setToastMessage(
+          `${t('ride.freeTransfer')} ${t('ride.transferActive')} · ${t('plan.line')} ${vehicle.line} · ${remainingMin} ${t('ride.minLeft')}`,
+        );
         return;
       }
       if (askBeforeCharge) {
@@ -72,8 +75,8 @@ export function useRideDetector() {
             passengers: 1, startedAtMs: nowMs, expiresAtMs, chargeId: result.charge.id, isTransfer: false, transfersCount: 0,
             destination: vehicle.destination, station: vehicle.station,
           });
-          const fareStr = result.coveredByPass ? 'Abonament' : `${result.charge.amount.toFixed(2).replace('.', ',')} lei`;
-          setToastMessage(`Linia ${vehicle.line} · 1 persoană · ${fareStr}`);
+          const fareStr = result.coveredByPass ? t('ride.pass') : `${result.charge.amount.toFixed(2).replace('.', ',')} lei`;
+          setToastMessage(`${t('plan.line')} ${vehicle.line} · 1 ${t('ride.person')} · ${fareStr}`);
         }
       } catch {
         detectVehicle(vehicle);
@@ -98,9 +101,9 @@ export function useRideDetector() {
         passengers, startedAtMs: nowMs, expiresAtMs, chargeId: result.charge.id, isTransfer: false, transfersCount: 0,
         destination: vehicle.destination, station: vehicle.station,
       });
-      const fareStr = result.charge.amount === 0 ? 'Abonament' : `${result.charge.amount.toFixed(2).replace('.', ',')} lei`;
-      const passText = passengers === 1 ? '1 persoană' : `${passengers} persoane`;
-      setToastMessage(`Linia ${vehicle.line} · ${passText} · ${fareStr}`);
+      const fareStr = result.charge.amount === 0 ? t('ride.pass') : `${result.charge.amount.toFixed(2).replace('.', ',')} lei`;
+      const passText = `${passengers} ${passengers === 1 ? t('ride.person') : t('ride.people')}`;
+      setToastMessage(`${t('plan.line')} ${vehicle.line} · ${passText} · ${fareStr}`);
     },
     [confirmRideCharge, detectedVehicle, passengerCount, setActiveRide, setToastMessage, startTicket],
   );
@@ -133,6 +136,6 @@ export function useRideDetector() {
   return {
     status, detectedVehicle, passengerCount, activeRide, activeTicket, toastMessage,
     setPassengerCount, incrementPassengers, decrementPassengers, dismissDetection,
-    confirmBoarding, simulateBoarding, simulateTransfer, clearRide, resetAll, setToastMessage,
+    confirmBoarding, simulateBoarding, simulateTransfer, clearRide, resetAll, setToastMessage, handleDetected,
   };
 }

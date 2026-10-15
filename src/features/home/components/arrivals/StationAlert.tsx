@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { t } from '../../../../core/i18n';
 import { fontWeights } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
-import { timeAgoShort } from '../../../../core/utils/format';
 import type { DelayCause } from '../../../../features/map/delays';
 import type { Report } from '../../../../services/api/schemas/report';
 
@@ -22,10 +21,18 @@ interface StationAlertProps {
   alerts: Report[];
 }
 
-function ageLabel(createdAt: string | undefined): string | null {
+/** "acum 12 min" / "acum 2 h" / "acum 3 zile": whole words, never a cryptic "11z". */
+export function ageLabel(createdAt: string | undefined, nowMs: number = Date.now()): string | null {
   if (!createdAt) return null;
-  const parts = [t('home.agoPre'), timeAgoShort(createdAt), t('home.agoPost')].filter((p) => p !== '');
-  return parts.join(' ');
+  const min = Math.max(0, Math.round((nowMs - new Date(createdAt).getTime()) / 60_000));
+  const days = Math.floor(min / 1440);
+  const amount =
+    min < 60
+      ? `${min} ${t('common.min')}`
+      : min < 1440
+        ? `${Math.floor(min / 60)} ${t('common.hours')}`
+        : `${days} ${days === 1 ? t('common.day') : t('common.days')}`;
+  return [t('home.agoPre'), amount, t('home.agoPost')].filter((p) => p !== '').join(' ');
 }
 
 /** Compact disruption row, expandable to confirmations and all alerts. */
@@ -36,13 +43,15 @@ export function StationAlert({ alerts }: StationAlertProps) {
   const first = alerts[0];
   const rest = alerts.length - 1;
   const age = ageLabel(first.createdAt);
-  const headline = `${causeLabel(first.kind)} · Linia ${first.line}${rest > 0 ? ` +${rest} ${t('home.alerts')}` : ''}${age ? ` · ${age}` : ''}`;
+  const headline = `${causeLabel(first.kind)} · ${t('plan.line')} ${first.line}${rest > 0 ? ` +${rest} ${t('home.alerts')}` : ''}${age ? ` · ${age}` : ''}`;
 
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={headline}
+      accessibilityState={{ expanded }}
       onPress={() => setExpanded((e) => !e)}
-      style={[styles.card, { backgroundColor: `${colors.warning}1F`, borderColor: `${colors.warning}66` }]}
+      style={[styles.card, { backgroundColor: colors.warningSoft, borderColor: colors.warningBorder }]}
     >
       <View style={styles.titleRow}>
         <Ionicons name="warning" size={16} color={colors.warning} />

@@ -1,1 +1,11 @@
-export type { DetectionService, Unsubscribe } from './types';
+export { isStrong, isWeak, smoothRssi } from './ble/rssi';
+export { confirmBoarding, initCluster, isNearBus, nextCluster } from './cluster';
+export type { ClusterTracker } from './cluster';
+export { DEFAULT_CLUSTER_CONFIG } from './types';
+export type { BlePoll, ClusterConfig, ClusterState, GpsFix, RssiDbm } from './types';
+export { BLE_POLL_MS, stepPresence, strongestPerVehicle } from './ble/presence';
+export type { PresenceMap, PresenceStep, VehiclePresence } from './ble/presence';
+export { createBleScanner, emitMockBleSample, parseVehicleId } from './ble/scanner';
+export type { BleSample, BleScanner } from './ble/scanner';
+export { useBusPresence } from './hooks/useBusPresence';
+export type { BusPresenceHandlers } from './hooks/useBusPresence';

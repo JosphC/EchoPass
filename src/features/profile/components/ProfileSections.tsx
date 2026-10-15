@@ -23,7 +23,7 @@ export function ProfileSections({ onSoon, onSettings }: ProfileSectionsProps) {
   return (
     <View>
       <Text style={[styles.heading, { color: colors.textMuted }]}>{t('profile.preferences')}</Text>
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         <Toggle
           icon={icon('location-outline')}
           label={t('profile.location')}
@@ -42,14 +42,15 @@ export function ProfileSections({ onSoon, onSettings }: ProfileSectionsProps) {
           label={t('profile.darkMode')}
           value={preference === 'dark'}
           onValueChange={(next) => setPreference(next ? 'dark' : 'light')}
+          divider={false}
         />
       </View>
 
       <Text style={[styles.heading, { color: colors.textMuted }]}>{t('profile.other')}</Text>
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         <ListItem icon={icon('settings-outline')} title={t('profile.settings')} onPress={onSettings} />
         <ListItem icon={icon('help-circle-outline')} title={t('profile.helpCenter')} onPress={onSoon} />
-        <ListItem icon={icon('log-out-outline')} title={t('profile.logout')} onPress={onSoon} />
+        <ListItem icon={icon('log-out-outline')} title={t('profile.logout')} onPress={onSoon} divider={false} />
       </View>
     </View>
   );
@@ -59,21 +60,13 @@ const styles = StyleSheet.create({
   heading: {
     marginTop: spacing.md,
     marginBottom: 6,
-    marginLeft: 6,
-    fontSize: 12.5,
-    fontWeight: fontWeights.semiBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    marginLeft: 4,
+    fontSize: 13,
+    fontWeight: fontWeights.medium,
   },
   card: {
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 16,
+    borderRadius: 24,
+    paddingHorizontal: 18,
     paddingVertical: 2,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
 });

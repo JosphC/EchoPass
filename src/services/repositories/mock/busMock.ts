@@ -4,6 +4,7 @@ import type { BusRepo } from '../types';
 export function createBusMock(): BusRepo {
   return {
     getBuses: async () => seedBuses,
-    getPositions: async () => seedPositions,
+    // Mock vehicles are always live: stamp them now so freshness checks pass.
+    getPositions: async () => seedPositions.map((p) => ({ ...p, updatedAt: new Date().toISOString() })),
   };
 }

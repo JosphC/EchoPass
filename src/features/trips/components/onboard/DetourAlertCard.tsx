@@ -8,16 +8,15 @@ interface DetourAlertCardProps {
 }
 
 export function DetourAlertCard({ alert }: DetourAlertCardProps) {
-  const { scheme } = useTheme();
-  const isDark = scheme === 'dark';
+  const { colors } = useTheme();
 
   return (
-    <View style={[styles.card, isDark ? styles.cardDark : styles.cardLight]}>
+    <View style={[styles.card, { backgroundColor: colors.warningSoft, borderColor: colors.warningBorder }]}>
       <View style={styles.header}>
-        <Ionicons name="warning" size={15} color={isDark ? '#FBBF24' : '#D97706'} />
-        <Text style={[styles.title, { color: isDark ? '#FBBF24' : '#92400E' }]}>{alert.title}</Text>
+        <Ionicons name="warning" size={15} color={colors.warning} />
+        <Text style={[styles.title, { color: colors.warningText }]}>{alert.title}</Text>
       </View>
-      <Text numberOfLines={2} style={[styles.desc, { color: isDark ? '#D4D4D8' : '#78350F' }]}>
+      <Text numberOfLines={2} style={[styles.desc, { color: colors.warningText }]}>
         {alert.description}
       </Text>
     </View>
@@ -33,14 +32,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 6,
     gap: 4,
-  },
-  cardDark: {
-    backgroundColor: '#262214',
-    borderColor: '#785A18',
-  },
-  cardLight: {
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FDE68A',
   },
   header: {
     flexDirection: 'row',

@@ -1,4 +1,5 @@
 import { getLocale, t } from '../i18n';
+import { formatTransitTime } from './timezone';
 
 export function formatRon(value: number): string {
   return `${value.toFixed(2)} lei`;
@@ -34,11 +35,9 @@ export function formatDayMonth(dateStr: string): string {
   return getLocale() === 'ro' ? `${d.getUTCDate()} ${month}` : `${month} ${d.getUTCDate()}`;
 }
 
-/** Wall-clock HH:MM in device timezone ("19:24"). */
+/** Wall-clock HH:MM on Timișoara's clock ("19:24"), like the printed timetable. */
 export function formatTime(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return formatTransitTime(new Date(iso).getTime());
 }
 
 /** Card-style stamp: "24 Mar · 07:42". */

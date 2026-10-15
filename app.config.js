@@ -1,5 +1,3 @@
-const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY ?? '';
-
 module.exports = {
   expo: {
     name: 'EchoPass',
@@ -36,12 +34,8 @@ module.exports = {
         backgroundColor: '#FFFFFF',
       },
       permissions: ['BLUETOOTH_SCAN', 'BLUETOOTH_CONNECT', 'RECORD_AUDIO', 'POST_NOTIFICATIONS', 'ACCESS_FINE_LOCATION'],
-      config: {
-        googleMaps: { apiKey: mapsKey },
-      },
     },
     extra: {
-      mapsKey,
       eas: {
         projectId: '0a4cc337-e293-4147-a867-7e2fca9b5959',
       },
@@ -49,6 +43,22 @@ module.exports = {
     web: {
       favicon: './assets/favicon.png',
     },
-    plugins: ['expo-router', 'expo-localization', 'expo-dev-client'],
+    plugins: [
+      'expo-router',
+      'expo-localization',
+      'expo-dev-client',
+      '@maplibre/maplibre-react-native',
+      [
+        'react-native-ble-plx',
+        {
+          isBackgroundEnabled: true,
+          modes: ['central'],
+          // Beacons are filtered out of scan results when the scan disclaims location.
+          neverForLocation: false,
+          bluetoothAlwaysPermission:
+            'EchoPass detectează autobuzul din apropiere prin Bluetooth pentru check-in automat.',
+        },
+      ],
+    ],
   },
 };

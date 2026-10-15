@@ -1,7 +1,12 @@
-import { hasMapKey } from '../../../src/features/map';
+import { MAP_ATTRIBUTION, MAP_STYLE_URL, isMapNativeAvailable } from '../../../src/features/map';
 
-describe('map key (faza 5)', () => {
-  it('reports no key in jest (list fallback active)', () => {
-    expect(hasMapKey()).toBe(false);
+describe('stil hartă (maplibre)', () => {
+  it('folosește tile-uri gratuite fără cheie', () => {
+    expect(MAP_STYLE_URL).toContain('tiles.openfreemap.org');
+    expect(MAP_ATTRIBUTION).toContain('OpenStreetMap');
+  });
+
+  it('raportează modulul nativ lipsă în jest (fără native)', () => {
+    expect(isMapNativeAvailable()).toBe(false);
   });
 });

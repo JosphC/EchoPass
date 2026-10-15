@@ -17,8 +17,7 @@ interface ActionChipRowProps {
 
 /** Horizontal action chips with an edge fade instead of abrupt clipping. */
 export function ActionChipRow({ actions }: ActionChipRowProps) {
-  const { colors, scheme } = useTheme();
-  const isDark = scheme === 'dark';
+  const { colors } = useTheme();
 
   return (
     <View style={styles.wrap}>
@@ -29,15 +28,15 @@ export function ActionChipRow({ actions }: ActionChipRowProps) {
           const bg = primary
             ? colors.primary
             : active
-              ? isDark ? '#1E3A8A' : '#EFF6FF'
-              : isDark ? '#1E293B' : '#F1F5F9';
+              ? colors.primarySoft
+              : colors.fill;
           const border = primary
             ? colors.primary
             : active
               ? colors.primary
               : colors.border;
           const fg = primary
-            ? '#FFFFFF'
+            ? colors.onPrimary
             : active
               ? colors.primary
               : colors.text;
@@ -46,6 +45,7 @@ export function ActionChipRow({ actions }: ActionChipRowProps) {
             <Pressable
               key={a.label}
               accessibilityRole="button"
+              accessibilityLabel={a.label}
               onPress={a.onPress}
               style={({ pressed }) => [
                 styles.chip,
@@ -63,7 +63,8 @@ export function ActionChipRow({ actions }: ActionChipRowProps) {
         })}
       </ScrollView>
       <LinearGradient
-        colors={['transparent', colors.background]}
+        // Same color as the sheet (card), so the last chip fades out instead of being cut.
+        colors={['transparent', colors.card]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.fade}
@@ -100,6 +101,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     right: 0,
-    width: spacing.xl,
+    width: spacing.xl * 1.5,
   },
 });

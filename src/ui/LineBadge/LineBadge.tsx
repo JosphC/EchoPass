@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { fontSizes, fontWeights, radius, spacing } from '../../core/theme';
 import { lineColor } from '../../core/theme/lineColors';
+import { findRoute } from '../../services/repositories/gtfs/timetable';
 import { contrastText } from '../../core/utils/contrast';
 
 interface LineBadgeProps {
@@ -11,9 +12,11 @@ interface LineBadgeProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-/** The one line badge used app-wide: official color, palette fallback. */
+/** The one line badge used app-wide: official STPT color (GTFS), palette fallback. */
 export function LineBadge({ shortName, color, textColor, testID, size = 'sm' }: LineBadgeProps) {
-  const bg = color ?? lineColor(shortName);
+  const route = color ? null : findRoute(shortName);
+  const bg = color ?? route?.color ?? lineColor(shortName);
+  const fg = textColor ?? route?.textColor ?? undefined;
   const isSm = size === 'sm';
   const isLg = size === 'lg';
 
@@ -31,7 +34,7 @@ export function LineBadge({ shortName, color, textColor, testID, size = 'sm' }: 
         style={[
           styles.text,
           isSm ? styles.textSm : isLg ? styles.textLg : styles.textMd,
-          { color: textColor ?? contrastText(bg) },
+          { color: fg ?? contrastText(bg) },
         ]}
       >
         {shortName}

@@ -1,6 +1,6 @@
 import type { LatLng } from '../../../features/map/arrivals';
 
-interface ShapesAsset {
+export interface ShapesAsset {
   ids: string[];
   coords: [number, number][][];
   trips: number[];
@@ -15,7 +15,7 @@ export interface ShapeAnchor {
 let cached: ShapesAsset | null = null;
 const sliceCache = new Map<string, LatLng[]>();
 
-function loadShapes(): ShapesAsset {
+export function loadShapes(): ShapesAsset {
   if (!cached) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     cached = require('../../../assets/shapes.json') as ShapesAsset;
@@ -23,7 +23,7 @@ function loadShapes(): ShapesAsset {
   return cached;
 }
 
-function distKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
+export function distKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
   const R = 6371;
   const p1 = (aLat * Math.PI) / 180;
   const p2 = (bLat * Math.PI) / 180;
@@ -36,7 +36,7 @@ function distKm(aLat: number, aLng: number, bLat: number, bLng: number): number 
 /** Max distance between a station and the shape path (data mismatch guard). */
 const SNAP_KM = 0.15;
 
-interface Projection {
+export interface Projection {
   segIdx: number;
   /** Position along the segment, 0..1. */
   t: number;
@@ -45,7 +45,7 @@ interface Projection {
 }
 
 /** Orthogonal projection of a stop onto every shape segment; earliest wins. */
-function projectOntoShape(
+export function projectOntoShape(
   pts: [number, number][],
   coord: LatLng,
   fromSegIdx: number,

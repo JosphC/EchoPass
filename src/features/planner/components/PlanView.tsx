@@ -7,7 +7,7 @@ import { fontSizes, spacing } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 import { formatRon } from '../../../core/utils/format';
 import { Button, Card, CrowdBars, ScreenHeader } from '../../../ui';
-import { LiveMap, loadStations, useLiveMap, type LatLng, type Station } from '../../map';
+import { BusListFallback, LiveMap, MapErrorBoundary, loadStations, useLiveMap, type LatLng, type Station } from '../../map';
 import type { RouteFilter } from '../options';
 import { useRouteGeometry } from '../routeGeometry';
 import { planTransit } from '../transit';
@@ -105,18 +105,20 @@ export function PlanView() {
   return (
     <View style={[styles.root, { backgroundColor: colors.background, paddingTop: insets.top + spacing.lg }]}>
       <View style={styles.map}>
-        <LiveMap
-          markers={allMarkers}
-          station={chosen?.boardStation ?? from}
-          extraStations={extraStations}
-          routeSegments={segments}
-          routeFitCoords={allCoordinates}
-          originPin={originPin}
-          destPin={destPin}
-          selectedId={null}
-          followed={null}
-          onSelect={select}
-        />
+        <MapErrorBoundary fallback={<BusListFallback markers={allMarkers} onSelect={select} />}>
+          <LiveMap
+            markers={allMarkers}
+            station={chosen?.boardStation ?? from}
+            extraStations={extraStations}
+            routeSegments={segments}
+            routeFitCoords={allCoordinates}
+            originPin={originPin}
+            destPin={destPin}
+            selectedId={null}
+            followed={null}
+            onSelect={select}
+          />
+        </MapErrorBoundary>
       </View>
       <ScrollView style={styles.sheet}>
         <ScreenHeader title={t('planner.title')} onBack={() => router.back()} />
@@ -128,7 +130,7 @@ export function PlanView() {
           <>
             <RouteFilters value={filter} onChange={setFilter} />
             <Card>
-              <StepsList steps={chosen.legs.map((l) => ({ kind: l.kind, line: l.line ?? '', minutes: l.minutes, to: l.toName }))} />
+              <StepsList legs={chosen.legs} startMs={Date.now()} />
               <View style={styles.summary}>
                 <CrowdBars level={chosen.crowd} />
                 <Text style={[styles.total, { color: colors.text }]}>

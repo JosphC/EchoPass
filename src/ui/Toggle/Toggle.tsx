@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { fontSizes, radius, spacing } from '../../core/theme';
+import { fontWeights, radius, spacing } from '../../core/theme';
 import { useTheme } from '../../core/theme/useTheme';
 
 interface ToggleProps {
@@ -9,24 +9,27 @@ interface ToggleProps {
   label?: string;
   icon?: ReactNode;
   testID?: string;
+  /** Hairline under the row; pass false for the last row of a grouped card. */
+  divider?: boolean;
 }
 
-export function Toggle({ value, onValueChange, label, icon, testID }: ToggleProps) {
+export function Toggle({ value, onValueChange, label, icon, testID, divider = true }: ToggleProps) {
   const { colors } = useTheme();
 
   return (
     <Pressable
       testID={testID}
       accessibilityRole="switch"
+      accessibilityLabel={label}
       accessibilityState={{ checked: value }}
       onPress={() => onValueChange(!value)}
-      style={styles.row}
+      style={[styles.row, label && divider ? { borderBottomColor: colors.border, borderBottomWidth: StyleSheet.hairlineWidth } : null]}
     >
       {icon ? <View style={styles.icon}>{icon}</View> : null}
       {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : null}
       <View style={styles.spacer} />
       <View style={[styles.track, { backgroundColor: value ? colors.primary : colors.border, borderColor: colors.border }]}>
-        <View style={[styles.thumb, { backgroundColor: '#FFFFFF', marginLeft: value ? 22 : 2 }]} />
+        <View style={[styles.thumb, { backgroundColor: colors.onPrimary, marginLeft: value ? 22 : 2 }]} />
       </View>
     </Pressable>
   );
@@ -38,6 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     minHeight: 44,
+    paddingVertical: 10,
   },
   track: {
     width: 48,
@@ -52,7 +56,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   label: {
-    fontSize: fontSizes.md,
+    fontSize: 15.5,
+    fontWeight: fontWeights.semiBold,
   },
   icon: {
     width: 28,

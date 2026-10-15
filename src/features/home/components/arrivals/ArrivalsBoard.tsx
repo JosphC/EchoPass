@@ -50,7 +50,8 @@ export function ArrivalsBoard({ station, coords, onSelectStation, onDirections, 
   const { submitReport } = useReportSubmit();
 
   const { items, routes, lineFilter, toggleLine, clearFilter, isLoading, isError, hasCache, updatedAtMs, refetch } =
-    useStopArrivals(station.id, { limit, windowMin: 60 });
+    // 2 h: hourly lines (E3, M-lines) must still show, like Google Maps.
+    useStopArrivals(station.id, { limit, windowMin: 120 });
   const { alerts } = useLiveMapReports(station);
 
   useEffect(() => {
@@ -64,7 +65,8 @@ export function ArrivalsBoard({ station, coords, onSelectStation, onDirections, 
       .slice(0, 3)
       .map((it) => `${it.arrival.route.shortName} -> ${it.arrival.headsign} (${it.minutesLeft} min)`)
       .join(', ');
-    const message = `Stația ${station.name} (${station.lines.join(', ')}):\n${topArrivals ? `Următoarele sosiri: ${topArrivals}` : 'Fără sosiri imediate'}\nEchoPass`;
+    const next = topArrivals ? `${t('home.shareNext')}: ${topArrivals}` : t('home.shareNone');
+    const message = `${t('home.shareStop')} ${station.name} (${station.lines.join(', ')}):\n${next}\nEchoPass`;
     try {
       await Share.share({ message });
     } catch {
@@ -137,7 +139,12 @@ export function ArrivalsBoard({ station, coords, onSelectStation, onDirections, 
           />
         ))}
         {items.length >= limit ? (
-          <Pressable accessibilityRole="button" onPress={() => setLimit((l) => l + PAGE)} style={styles.more}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('home.loadMore')}
+            onPress={() => setLimit((l) => l + PAGE)}
+            style={styles.more}
+          >
             <Text style={[styles.moreLabel, { color: colors.primary }]}>{t('home.loadMore')}</Text>
           </Pressable>
         ) : null}
@@ -149,7 +156,7 @@ export function ArrivalsBoard({ station, coords, onSelectStation, onDirections, 
             <Text style={[styles.reportTitle, { color: colors.text }]}>{t('home.reportStation')}</Text>
             {reportSent ? (
               <View style={styles.reportFeedback}>
-                <Ionicons name="checkmark-circle" size={36} color={colors.success} />
+                <Ionicons name="checkmark-circle" size={36} color={colors.primary} />
                 <Text style={[styles.reportFeedbackText, { color: colors.text }]}>{t('home.reportSent')}</Text>
               </View>
             ) : (
@@ -174,11 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     gap: 10,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   skeleton: { gap: spacing.sm, paddingVertical: spacing.sm },
   bone: { height: 46, borderRadius: radius.md, opacity: 0.6 },

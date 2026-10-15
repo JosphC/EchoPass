@@ -21,7 +21,7 @@ export function Tag({ label, tone = 'neutral' }: TagProps) {
           : tone === 'danger'
             ? colors.danger
             : colors.border;
-  const fg = tone === 'neutral' ? colors.text : '#FFFFFF';
+  const fg = tone === 'neutral' ? colors.text : colors.onPrimary;
 
   return (
     <View style={[styles.root, { backgroundColor: bg }]}>

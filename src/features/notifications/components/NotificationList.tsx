@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { timeAgoShort } from '../../../core/utils/format';
+import { formatDayMonth, timeAgoShort } from '../../../core/utils/format';
 import type { AppNotification } from '../../../services/api/schemas/notification';
 import { t } from '../../../core/i18n';
-import { fontSizes, fontWeights, radius, spacing } from '../../../core/theme';
+import { fontWeights, radius, spacing } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 
 interface NotificationListProps {
@@ -13,25 +13,34 @@ interface NotificationListProps {
   onOpen: (id: string) => void;
 }
 
-function Card({ item, onOpen }: { item: AppNotification; onOpen: (id: string) => void }) {
+const DAY_MS = 86_400_000;
+
+/** "9min" / "2h" inside a day, then the date ("3 oct") like the Activity history. */
+function stamp(iso: string): string {
+  return Date.now() - new Date(iso).getTime() < DAY_MS ? timeAgoShort(iso) : formatDayMonth(iso.slice(0, 10));
+}
+
+function Row({ item, divider, onOpen }: { item: AppNotification; divider: boolean; onOpen: (id: string) => void }) {
   const { colors } = useTheme();
   const unread = !item.read;
-  const accent = unread ? colors.primary : colors.textMuted;
 
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={`${item.title}. ${item.body}`}
       onPress={() => onOpen(item.id)}
-      style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+      style={[styles.row, divider && { borderBottomColor: colors.border, borderBottomWidth: StyleSheet.hairlineWidth }]}
     >
-      <View style={[styles.icon, { borderColor: colors.border }]}>
-        <Ionicons name="notifications-outline" size={22} color={accent} />
-        {unread ? <View style={[styles.dot, { backgroundColor: colors.danger }]} /> : null}
+      <View style={[styles.icon, { backgroundColor: unread ? colors.primarySoft : colors.fill }]}>
+        <Ionicons name="notifications-outline" size={19} color={unread ? colors.primary : colors.textMuted} />
       </View>
       <View style={styles.texts}>
         <View style={styles.head}>
-          <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
-          <Text style={[styles.time, { color: accent }]}>{timeAgoShort(item.createdAt)}</Text>
+          <Text numberOfLines={1} style={[styles.title, { color: colors.text }, unread && styles.titleUnread]}>
+            {item.title}
+          </Text>
+          <Text style={[styles.time, { color: colors.textMuted }]}>{stamp(item.createdAt)}</Text>
+          {unread ? <View style={[styles.dot, { backgroundColor: colors.primary }]} /> : null}
         </View>
         <Text numberOfLines={2} style={[styles.body, { color: colors.textMuted }]}>
           {item.body}
@@ -47,17 +56,17 @@ function Group({ label, items, onOpen }: { label: string; items: AppNotification
 
   return (
     <View style={styles.group}>
-      <View style={styles.groupHead}>
-        <Text style={[styles.groupLabel, { color: colors.text }]}>{label}</Text>
-        <View style={[styles.groupLine, { backgroundColor: colors.border }]} />
+      <Text style={[styles.groupLabel, { color: colors.textMuted }]}>{label}</Text>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        {items.map((n, i) => (
+          <Row key={n.id} item={n} divider={i < items.length - 1} onOpen={onOpen} />
+        ))}
       </View>
-      {items.map((n) => (
-        <Card key={n.id} item={n} onOpen={onOpen} />
-      ))}
     </View>
   );
 }
 
+/** Grouped like the Activity history: one card per day group, hairlines between rows. */
 export function NotificationList({ today, yesterday, older, onOpen }: NotificationListProps) {
   return (
     <View>
@@ -69,70 +78,16 @@ export function NotificationList({ today, yesterday, older, onOpen }: Notificati
 }
 
 const styles = StyleSheet.create({
-  group: {
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  groupHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  groupLabel: {
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.medium,
-  },
-  groupLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-  },
-  card: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: 16,
-    minHeight: 76,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  icon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dot: {
-    position: 'absolute',
-    top: 10,
-    right: 12,
-    width: 8,
-    height: 8,
-    borderRadius: radius.full,
-  },
-  texts: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  head: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.sm,
-  },
-  title: {
-    flex: 1,
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.semiBold,
-  },
-  time: {
-    fontSize: fontSizes.sm,
-  },
-  body: {
-    fontSize: fontSizes.sm,
-  },
+  group: { gap: spacing.sm, marginBottom: spacing.lg },
+  groupLabel: { fontSize: 13, fontWeight: fontWeights.medium, marginLeft: 4 },
+  card: { borderRadius: 24, paddingHorizontal: 18 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
+  icon: { width: 40, height: 40, borderRadius: radius.full, alignItems: 'center', justifyContent: 'center' },
+  texts: { flex: 1, gap: 3 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  title: { flex: 1, fontSize: 15, fontWeight: fontWeights.medium },
+  titleUnread: { fontWeight: fontWeights.bold },
+  time: { fontSize: 12.5 },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  body: { fontSize: 13.5 },
 });

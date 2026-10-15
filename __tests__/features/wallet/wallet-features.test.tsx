@@ -81,7 +81,8 @@ describe('Wallet Mature Features', () => {
       />,
     );
 
-    expect(getByText(/Abonament STPT Timișoara/)).toBeTruthy();
+    expect(getByText('Valabil până la')).toBeTruthy();
+    expect(getByText(/Toate liniile urbane STPT/)).toBeTruthy();
     fireEvent.press(getByTestId('btn-renew-pass'));
     expect(onOpenRenew).toHaveBeenCalledTimes(1);
   });

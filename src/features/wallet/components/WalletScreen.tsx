@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { t } from '../../../core/i18n';
+import { formatTransitTime } from '../../../core/utils/timezone';
 import { Screen, ScreenHeader } from '../../../ui';
 import { ActiveRideCard } from './ActiveRideCard';
 import { CardStack } from './cards/CardStack';
@@ -66,7 +67,7 @@ export function WalletScreen() {
     line: activeTicket.currentLine,
     destination: activeTicket.destination ?? 'Toate liniile STPT · Bilet 60 min',
     station: activeTicket.station ?? 'Validat în sistem',
-    startedAt: new Date(activeTicket.startedAtMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    startedAt: formatTransitTime(activeTicket.startedAtMs),
     amount: activeTicket.isTransfer ? 0 : 3 * activeTicket.passengers,
     passengers: activeTicket.passengers,
     expiresAtMs: activeTicket.expiresAtMs,

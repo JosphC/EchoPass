@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { pushPlanRoute } from '../../navigation';
 import { useRoutePlanner } from '../../hooks/useRoutePlanner';
@@ -17,7 +17,7 @@ import {
   type Station,
 } from '../../../map';
 import { useWalletItems } from '../../../wallet';
-import { HomeBottomSheet, type SheetViewMode } from './HomeBottomSheet';
+import { HomeBottomSheet, type SheetSnapIndex, type SheetViewMode } from './HomeBottomSheet';
 import { HomeMapOverlay } from './HomeMapOverlay';
 import { styles } from './homeMapStyles';
 
@@ -98,10 +98,12 @@ export function HomeScreenView() {
     if (next !== 'stations') live.pickStation(null);
   }
 
-  function handlePickStation(st: Station): void {
+  // Map dot taps open the stop's schedule half-way (snap 1); search picks peek.
+  function handlePickStation(st: Station, snap: SheetSnapIndex = 0): void {
     setMapMode('stations');
+    setSheetMode('station');
     live.pickStation(st);
-    sheet.snapTo(0);
+    sheet.snapTo(snap);
   }
 
   function handleDirections(): void {
@@ -156,12 +158,14 @@ export function HomeScreenView() {
         <LiveMapPanel
           markers={markers}
           station={routePreview.selectedOption?.boardStation ?? live.station}
+          highlightStation={live.arrivalStation}
           selectedId={live.selected?.bus.id ?? null}
           followed={live.tracked}
           located={live.located}
           onSelect={live.select}
           onLocated={live.locate}
           onMapPress={handleMapPress}
+          onStationPress={(st) => handlePickStation(st, 1)}
           popup={live.selected}
           popupTracked={trackedId === live.selected?.bus.id}
           onTrackPopup={() => live.track(trackedId === live.selected?.bus.id ? null : (live.selected?.bus.id ?? null))}
@@ -204,11 +208,10 @@ export function HomeScreenView() {
         dismissSearchSignal={dismissSearch}
       />
 
-      <LocateButton
-        active={live.located}
-        onPress={() => void handleLocate()}
-        style={[styles.locateWrap, { bottom: sheetHeight + 14 }]}
-      />
+      {/* Follows the sheet's animated height, so it never sinks under the sheet. */}
+      <Animated.View style={[styles.locateWrap, { bottom: Animated.add(sheet.sheetAnim, 14) }]}>
+        <LocateButton active={live.located} onPress={() => void handleLocate()} style={styles.locateInline} />
+      </Animated.View>
 
       <HomeBottomSheet
         sheetMode={sheetMode}

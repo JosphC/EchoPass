@@ -1,37 +1,36 @@
 import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import { fontSizes, fontWeights, radius } from '../../../../core/theme';
+import { t } from '../../../../core/i18n';
+import { fontSizes, fontWeights, radius, type AppColors } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
 import type { LocationPlace } from '../../places';
 import type { Station } from '../../stations';
 
 export type PlaceResultItem = Station | LocationPlace;
 
-interface StationResultsProps {
-  results: PlaceResultItem[];
-  onPick: (item: any) => void;
+interface StationResultsProps<T extends PlaceResultItem> {
+  results: T[];
+  onPick: (item: T) => void;
   floating?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
-function ResultRow({
+function ResultRow<T extends PlaceResultItem>({
   item,
   onPick,
-  isDark,
   colors,
 }: {
-  item: PlaceResultItem;
-  onPick: (item: any) => void;
-  isDark: boolean;
-  colors: any;
+  item: T;
+  onPick: (item: T) => void;
+  colors: AppColors;
 }) {
   const isPlace = 'kind' in item;
   const title = item.name;
   const subtitle = isPlace
     ? item.subtitle
     : item.lines.length > 0
-      ? `Liniile ${item.lines.slice(0, 5).join(', ')}${item.lines.length > 5 ? '…' : ''}`
-      : 'Stație de transport';
+      ? `${t('a11y.linesPrefix')} ${item.lines.slice(0, 5).join(', ')}${item.lines.length > 5 ? '…' : ''}`
+      : t('a11y.transitStop');
 
   const isPoi = isPlace && item.kind === 'poi';
   const iconName = isPlace
@@ -42,23 +41,18 @@ function ResultRow({
         : 'navigate'
     : 'bus';
 
-  const iconColor = isPoi ? '#DC2626' : '#2563EB';
-  const bubbleBg = isDark
-    ? isPoi
-      ? 'rgba(220, 38, 38, 0.18)'
-      : 'rgba(37, 99, 235, 0.18)'
-    : isPoi
-      ? '#FEF2F2'
-      : '#EFF6FF';
+  const iconColor = isPoi ? colors.danger : colors.primary;
+  const bubbleBg = isPoi ? colors.dangerSoft : colors.primarySoft;
 
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={`${title}, ${subtitle}`}
       onPress={() => onPick(item)}
       unstable_pressDelay={0}
       style={({ pressed }) => [
         styles.itemRow,
-        { backgroundColor: pressed ? (isDark ? '#303134' : '#F1F5F9') : 'transparent' },
+        { backgroundColor: pressed ? (colors.fill) : 'transparent' },
       ]}
     >
       <View style={[styles.iconBubble, { backgroundColor: bubbleBg }]}>
@@ -79,20 +73,20 @@ function ResultRow({
 }
 
 /** Autocomplete station & POI list: floating dropdown (map) or clean attached block (planner). */
-export function StationResults({ results, onPick, floating = true, style }: StationResultsProps) {
-  const { colors, isDark } = useTheme();
+export function StationResults<T extends PlaceResultItem>({ results, onPick, floating = true, style }: StationResultsProps<T>) {
+  const { colors } = useTheme();
   if (results.length === 0) return null;
 
   if (!floating) {
     return (
       <View
-        style={[styles.container, styles.inline, { backgroundColor: colors.card, borderColor: colors.border }, style]}
+        style={[styles.container, styles.inline, { backgroundColor: colors.searchBar, borderColor: colors.border }, style]}
         testID="station-results"
       >
         {results.slice(0, 5).map((item, index) => (
           <View key={item.id}>
             {index > 0 && <View style={[styles.separator, { backgroundColor: colors.border }]} />}
-            <ResultRow item={item} onPick={onPick} isDark={isDark} colors={colors} />
+            <ResultRow item={item} onPick={onPick} colors={colors} />
           </View>
         ))}
       </View>
@@ -101,7 +95,7 @@ export function StationResults({ results, onPick, floating = true, style }: Stat
 
   return (
     <View
-      style={[styles.container, styles.floating, { backgroundColor: colors.card, borderColor: colors.border }, style]}
+      style={[styles.floatingCard, { backgroundColor: colors.searchBar }, style]}
       testID="station-results"
     >
       <FlatList
@@ -113,7 +107,7 @@ export function StationResults({ results, onPick, floating = true, style }: Stat
         initialNumToRender={8}
         windowSize={9}
         ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: colors.border }]} />}
-        renderItem={({ item }) => <ResultRow item={item} onPick={onPick} isDark={isDark} colors={colors} />}
+        renderItem={({ item }) => <ResultRow item={item} onPick={onPick} colors={colors} />}
       />
     </View>
   );
@@ -125,18 +119,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
   },
-  floating: {
+  // Same surface as the search pill above it (no border, same shadow), one
+  // gap (8) under the 56-high pill, rounded like a Google Maps suggestion card.
+  floatingCard: {
     position: 'absolute',
-    top: 58,
+    top: 64,
     left: 0,
     right: 0,
     zIndex: 1000,
     maxHeight: 280,
-    elevation: 8,
+    borderRadius: radius.xl,
+    overflow: 'hidden',
+    elevation: 4,
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
   },
   // Bounded height on the list itself so it always scrolls instead of
   // growing past the card (flexGrow 0 shrink-wraps short result sets).

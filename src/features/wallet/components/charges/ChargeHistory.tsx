@@ -31,11 +31,12 @@ export function ChargeHistory({ charges, onOpen, maxItems, onViewAll }: ChargeHi
 
   return (
     <View style={styles.root}>
-      <Text style={[styles.title, { color: colors.text }]}>Ultima activitate</Text>
+      <Text style={[styles.title, { color: colors.text }]}>{t('statement.lastActivity')}</Text>
       {visible.map((charge) => (
         <Pressable
           key={charge.id}
           accessibilityRole="button"
+          accessibilityLabel={`${charge.destination ?? `${t('plan.line')} ${charge.line}`}, ${formatLei(charge.amount)}`}
           onPress={() => {
             if (onOpen) onOpen(charge.id);
             else if (onViewAll) onViewAll();
@@ -46,7 +47,7 @@ export function ChargeHistory({ charges, onOpen, maxItems, onViewAll }: ChargeHi
           <LineBadge shortName={charge.line} />
           <View style={styles.texts}>
             <Text style={[styles.line, { color: colors.text }]}>
-              {charge.destination ?? `Linia ${charge.line}`}
+              {charge.destination ?? `${t('plan.line')} ${charge.line}`}
             </Text>
             <Text style={[styles.sub, { color: colors.textMuted }]}>
               {formatShortDateTime(charge.startedAt)} · {formatLei(charge.amount)}
@@ -67,13 +68,12 @@ export function ChargeHistory({ charges, onOpen, maxItems, onViewAll }: ChargeHi
         <Pressable
           testID="btn-view-all-trips"
           accessibilityRole="button"
-          accessibilityLabel="Vezi tot istoricul în Călătorii"
+          accessibilityLabel={t('statement.seeAll')}
           onPress={onViewAll}
           style={({ pressed }) => [styles.viewAllRow, { opacity: pressed ? 0.7 : 1 }]}
         >
-          <Text style={[styles.viewAllText, { color: colors.primary }]}>
-            Vezi tot istoricul în Călătorii →
-          </Text>
+          <Text style={[styles.viewAllText, { color: colors.primary }]}>{t('statement.seeAll')}</Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.primary} />
         </Pressable>
       ) : null}
     </View>
@@ -114,8 +114,10 @@ const styles = StyleSheet.create({
   },
   viewAllRow: {
     paddingVertical: spacing.md,
-    alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
+    gap: 2,
+    alignItems: 'center',
   },
   viewAllText: {
     fontSize: fontSizes.sm,

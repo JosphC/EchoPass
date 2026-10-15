@@ -4,6 +4,11 @@ import type { Report } from '../../api/schemas/report';
 import type { RecentTrip, SavedRoute } from '../../api/schemas/trip';
 import type { Charge, DailyCap, WalletItem } from '../../api/schemas/wallet';
 
+/** Mock alerts stay "live": a fixed past date would be filtered out as stale. */
+function minutesAgo(min: number): string {
+  return new Date(Date.now() - min * 60_000).toISOString();
+}
+
 export const seedWalletItems: WalletItem[] = [
   { kind: 'card', id: 'card-1', network: 'visa', last4: '4021', holder: 'Ion Popescu', expiry: '11/28', token: 'tok_mock_card-1', bank: 'Nova Bank', tag: 'Principal' },
   { kind: 'card', id: 'card-2', network: 'mastercard', last4: '7718', holder: 'Ion Popescu', expiry: '03/27', token: 'tok_mock_card-2', bank: 'Meridian', tag: 'Economii' },
@@ -41,8 +46,8 @@ export const seedPositions: BusPosition[] = [
 ];
 
 export const seedReports: Report[] = [
-  { id: 'rep-1', kind: 'traffic', line: '17', stopName: 'Piața Mărăști', confirmations: 3, expiresAt: '2027-10-03T09:20:00Z', createdAt: '2026-10-03T07:12:00Z' },
-  { id: 'rep-2', kind: 'crowding', line: '11', stopName: 'Spitalul Municipal', confirmations: 1, expiresAt: '2027-10-03T09:20:00Z', createdAt: '2026-10-03T08:40:00Z' },
+  { id: 'rep-1', kind: 'traffic', line: '17', stopName: 'Piața Mărăști', confirmations: 3, expiresAt: '2027-10-03T09:20:00Z', createdAt: minutesAgo(18) },
+  { id: 'rep-2', kind: 'crowding', line: '11', stopName: 'Spitalul Municipal', confirmations: 1, expiresAt: '2027-10-03T09:20:00Z', createdAt: minutesAgo(42) },
 ];
 
 export const seedSavedRoutes: SavedRoute[] = [
@@ -59,8 +64,8 @@ export const seedRecentTrips: RecentTrip[] = [
 ];
 
 export const seedNotifications: AppNotification[] = [
-  { id: 'n-1', kind: 'charge', title: 'Plata calatorie', body: 'Linia 5: 3 lei, la coborare.', createdAt: '2026-10-03T07:42:00Z', read: false },
-  { id: 'n-2', kind: 'delay', title: 'Intarziere linia 32', body: 'Lucrari: +9 min.', createdAt: '2026-10-03T07:15:00Z', read: false },
+  { id: 'n-1', kind: 'charge', title: 'Plata călătoriei', body: 'Linia 5: 3 lei, la coborâre.', createdAt: '2026-10-03T07:42:00Z', read: false },
+  { id: 'n-2', kind: 'delay', title: 'Întârziere linia 32', body: 'Lucrări: +9 min.', createdAt: '2026-10-03T07:15:00Z', read: false },
   { id: 'n-3', kind: 'cap', title: 'Plafon aproape atins', body: 'Ai cheltuit 6 din 8 lei azi.', createdAt: '2026-10-02T17:15:00Z', read: true },
-  { id: 'n-4', kind: 'renewal', title: 'Abonament expira', body: 'Reinnoieste in 30 de zile.', createdAt: '2026-10-01T09:00:00Z', read: true },
+  { id: 'n-4', kind: 'renewal', title: 'Abonamentul expiră', body: 'Reînnoiește în 30 de zile.', createdAt: '2026-10-01T09:00:00Z', read: true },
 ];

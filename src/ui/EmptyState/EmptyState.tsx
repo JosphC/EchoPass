@@ -18,7 +18,7 @@ export function EmptyState({ title, message, actionLabel, onAction, testID }: Em
       <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
       <Text style={[styles.message, { color: colors.textMuted }]}>{message}</Text>
       {actionLabel && onAction ? (
-        <Pressable accessibilityRole="button" onPress={onAction} style={styles.action}>
+        <Pressable accessibilityRole="button" accessibilityLabel={actionLabel} onPress={onAction} style={styles.action}>
           <Text style={[styles.actionLabel, { color: colors.primary }]}>{actionLabel}</Text>
         </Pressable>
       ) : null}

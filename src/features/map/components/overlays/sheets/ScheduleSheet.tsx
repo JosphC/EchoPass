@@ -52,6 +52,8 @@ export function ScheduleSheet({ station, arrivals, selectedLine, onPickLine, onC
             <Pressable
               key={a.line}
               accessibilityRole="button"
+              accessibilityLabel={`${t('plan.line')} ${a.line}`}
+              accessibilityState={{ selected: active }}
               onPress={() => onPickLine(active ? null : a.line)}
               style={[
                 styles.row,

@@ -57,7 +57,7 @@ export function ReportFab({ line, bottomOffset = 96 }: ReportFabProps) {
         onPress={() => setOpen(true)}
         style={[styles.fab, { backgroundColor: colors.warning, bottom: bottomOffset }]}
       >
-        <Ionicons name="warning-outline" size={26} color="#FFFFFF" />
+        <Ionicons name="warning-outline" size={26} color={colors.onPrimary} />
       </Pressable>
       <BottomSheet visible={open} onClose={close}>
         <Text style={[styles.title, { color: colors.text }]}>{t('reports.title')}</Text>
@@ -69,7 +69,7 @@ export function ReportFab({ line, bottomOffset = 96 }: ReportFabProps) {
           <Text style={[styles.line, { color: colors.warning }]}>{t('reports.pickBus')}</Text>
         )}
         {sent ? (
-          <Text style={[styles.sent, { color: colors.success }]}>{t('reports.sent')}</Text>
+          <Text style={[styles.sent, { color: colors.text }]}>{t('reports.sent')}</Text>
         ) : (
           <View>
             {KINDS.map(({ kind, icon }) => (
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     shadowColor: '#111827',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.12,
     shadowRadius: 4,
   },
   title: {

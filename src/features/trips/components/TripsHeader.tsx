@@ -16,9 +16,10 @@ export function TripsHeader({ onNotifications }: TripsHeaderProps) {
       <Text style={[styles.title, { color: colors.text }]}>{t('trips.heading')}</Text>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Notifications"
+        accessibilityLabel={t('a11y.notifications')}
         onPress={onNotifications}
-        style={[styles.bell, { backgroundColor: colors.card }]}
+        hitSlop={8}
+        style={styles.bell}
       >
         <Ionicons name="notifications-outline" size={22} color={colors.primary} />
       </Pressable>
@@ -43,10 +44,5 @@ const styles = StyleSheet.create({
     borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
   },
 });

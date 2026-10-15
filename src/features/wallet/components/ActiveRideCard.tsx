@@ -1,6 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { SINGLE_FARE_RON } from '../../../core/config';
+import { t } from '../../../core/i18n';
 import { useTheme } from '../../../core/theme';
+import { findRoute } from '../../../services/repositories/gtfs/timetable';
+import { LineBadge } from '../../../ui';
 import { styles } from './actions/activeRideStyles';
 import { QrProgressButton } from './QrProgressButton';
 
@@ -45,7 +49,7 @@ export function ActiveRideCard({
   boardedAt = '18:24',
   expiresInMin = 42,
   totalMin = 60,
-  fareRon = 3,
+  fareRon = SINGLE_FARE_RON,
   passengers = 1,
   isTransfer = false,
   originalLine,
@@ -59,7 +63,8 @@ export function ActiveRideCard({
   const { boldPart, lightPart } = parseLineTitle(destination);
   const formattedFare = fareRon.toFixed(2).replace('.', ',');
   const isUrgent = expiresInMin <= 5;
-  const countdownColor = isUrgent ? '#DC2626' : (isTransfer ? '#2563EB' : '#15803D');
+  const countdownColor = isUrgent ? colors.danger : isTransfer ? colors.primary : colors.text;
+  const route = findRoute(line);
   const expiryDate = expiresAtMs ? new Date(expiresAtMs) : new Date(Date.now() + expiresInMin * 60000);
   const expiryH = String(expiryDate.getHours()).padStart(2, '0');
   const expiryM = String(expiryDate.getMinutes()).padStart(2, '0');
@@ -68,14 +73,14 @@ export function ActiveRideCard({
   const displayTransferAt = transferAt ? formatTimeClean(transferAt) : displayBoardedAt;
 
   const fareSub = isTransfer
-    ? `Din linia ${originalLine ?? '15'} · 0,00 lei`
-    : `${passengers > 1 ? 'Bilet de grup' : 'Bilet urban STPT'} · ${formattedFare} lei`;
+    ? `${t('ride.fromLine')} ${originalLine ?? '15'} · 0,00 lei`
+    : `${passengers > 1 ? t('ride.groupTicket') : t('ride.urbanTicket')} · ${formattedFare} lei`;
 
   return (
     <Pressable
       testID="active-ride-card"
       accessibilityRole="button"
-      accessibilityLabel={`Călătorie activă linia ${line}, bilet valabil ${expiresInMin} minute. Apasă pentru cod QR.`}
+      accessibilityLabel={`${t('ride.active')}, ${line}, ${expiresInMin} ${t('ride.minLeft')}. ${t('ride.tapForQr')}`}
       onPress={onOpenInspector}
       style={({ pressed }) => [
         styles.card,
@@ -83,25 +88,24 @@ export function ActiveRideCard({
       ]}
     >
       <View style={styles.headerRow}>
-        {isTransfer ? (
-          <View style={styles.transferRow}>
-            <Ionicons name="swap-horizontal" size={17} color="#2563EB" />
-            <Text style={styles.transferText}>Transbordare gratuită</Text>
-          </View>
-        ) : (
-          <View style={styles.activeStatusRow}>
-            <View style={styles.activeDot} />
-            <Text style={styles.activeStatusText}>Călătorie activă</Text>
-          </View>
-        )}
+        <View style={[styles.chip, { backgroundColor: isTransfer ? colors.primarySoft : colors.fill }]}>
+          {isTransfer ? (
+            <Ionicons name="swap-horizontal" size={14} color={colors.primary} />
+          ) : (
+            <View style={[styles.activeDot, { backgroundColor: colors.success }]} />
+          )}
+          <Text style={[styles.chipText, { color: isTransfer ? colors.primary : colors.textMuted }]}>
+            {isTransfer ? t('ride.freeTransfer') : t('ride.active')}
+          </Text>
+        </View>
         <View style={styles.passengersRow}>
-          <Ionicons name="people-outline" size={17} color={colors.textMuted} />
-          <Text style={[styles.passengersText, { color: colors.textMuted }]}>{passengers} {passengers === 1 ? 'persoană' : 'persoane'}</Text>
+          <Ionicons name="people-outline" size={16} color={colors.textMuted} />
+          <Text style={[styles.passengersText, { color: colors.textMuted }]}>{passengers} {passengers === 1 ? t('ride.person') : t('ride.people')}</Text>
         </View>
       </View>
 
       <View style={styles.transitRow}>
-        <View style={styles.lineBadge}><Text style={styles.lineBadgeText}>{line}</Text></View>
+        <LineBadge shortName={line} color={route?.color ?? undefined} textColor={route?.textColor ?? undefined} size="md" />
         <View style={styles.transitTexts}>
           <Text numberOfLines={1} style={[styles.destinationText, { color: colors.text }]}>
             {boldPart}{lightPart}
@@ -113,33 +117,35 @@ export function ActiveRideCard({
       <View style={styles.countdownRow}>
         <Text style={styles.countdownContainer}>
           <Text style={[styles.bigMinutes, { color: countdownColor }]}>{expiresInMin}</Text>
-          <Text style={[styles.ramaseText, { color: colors.textMuted }]}> min rămase</Text>
+          <Text style={[styles.ramaseText, { color: colors.textMuted }]}> {t('ride.minLeft')}</Text>
         </Text>
-        <Text style={[styles.expiraText, { color: colors.text }]}>Expiră la {expiryTime}</Text>
+        <Text style={[styles.expiraText, { color: colors.textMuted }]}>
+          {t('ride.expiresAt')} <Text style={{ color: colors.text }}>{expiryTime}</Text>
+        </Text>
       </View>
 
       <View style={styles.validationRow}>
-        <Ionicons name="checkmark-circle-outline" size={18} color="#16A34A" />
-        <Text numberOfLines={1} style={[styles.validationText, { color: colors.text }]}>
+        <Ionicons name="checkmark-circle-outline" size={18} color={colors.textMuted} />
+        <Text numberOfLines={1} style={[styles.validationText, { color: colors.textMuted }]}>
           {isTransfer
-            ? `Transbordat la ${displayTransferAt} · ${transferStation ?? station}`
-            : `Validat la ${displayBoardedAt} · ${station}`}
+            ? `${t('ride.transferredAt')} ${displayTransferAt} · ${transferStation ?? station}`
+            : `${t('ride.validatedAt')} ${displayBoardedAt} · ${station}`}
         </Text>
       </View>
 
       <View style={styles.perforationContainer}>
         <View style={styles.notchWrapperLeft}>
-          <View style={[styles.notchCircle, { left: -10, backgroundColor: colors.background, borderColor: colors.border }]} />
+          <View style={[styles.notchCircle, { left: -11, backgroundColor: colors.background, borderColor: colors.border }]} />
         </View>
         <View style={[styles.dashedLine, { borderTopColor: colors.border }]} />
         <View style={styles.notchWrapperRight}>
-          <View style={[styles.notchCircle, { right: -10, backgroundColor: colors.background, borderColor: colors.border }]} />
+          <View style={[styles.notchCircle, { right: -11, backgroundColor: colors.background, borderColor: colors.border }]} />
         </View>
       </View>
 
       <QrProgressButton progressPercent={progressPercent} onPress={onOpenInspector} />
 
-      <Text style={[styles.captionText, { color: colors.textMuted }]}>Pentru controlul STPT</Text>
+      <Text style={[styles.captionText, { color: colors.textMuted }]}>{t('ride.forInspection')}</Text>
     </Pressable>
   );
 }

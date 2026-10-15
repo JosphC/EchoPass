@@ -31,7 +31,7 @@ export function PlannerCard({
   onSwap,
   onSearchRoute,
 }: PlannerCardProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [open, setOpen] = useState<OpenField>(null);
   const [error, setError] = useState<string | null>(null);
   const { locating, error: locateError, setError: setLocateError, locate } = useLocateOrigin();
@@ -57,7 +57,7 @@ export function PlannerCard({
   const spin = swapAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
   const valid = origin !== null && destination !== null && origin.id !== destination.id;
   const shownError = error ?? locateError;
-  const iconColor = isDark ? '#E5E7EB' : '#202124';
+  const iconColor = colors.text;
 
   async function locateOrigin(): Promise<void> {
     setError(null);
@@ -98,12 +98,12 @@ export function PlannerCard({
     <View style={[styles.card, { backgroundColor: colors.card }]}>
       <View style={styles.routeRow}>
         <View style={styles.trackColumn}>
-          <View style={[styles.metroOrigin, { backgroundColor: colors.card }]}>
-            <View style={styles.metroOriginDot} />
+          <View style={[styles.metroOrigin, { backgroundColor: colors.card, borderColor: colors.primary }]}>
+            <View style={[styles.metroOriginDot, { backgroundColor: colors.primary }]} />
           </View>
-          <View style={[styles.metroRail, { backgroundColor: isDark ? '#5F6368' : '#BFDBFE' }]} />
+          <View style={[styles.metroRail, { backgroundColor: colors.rail }]} />
           <View style={styles.metroDestWrap}>
-            <Ionicons name="location-sharp" size={19} color="#DC2626" />
+            <Ionicons name="location-sharp" size={19} color={colors.danger} />
           </View>
         </View>
 
@@ -153,13 +153,13 @@ export function PlannerCard({
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Schimbă originea cu destinația"
+          accessibilityLabel={t('a11y.swap')}
           onPress={handleSwapPress}
           hitSlop={12}
           style={({ pressed }) => [
             styles.swapButton,
             {
-              backgroundColor: isDark ? '#303134' : '#F1F5F9',
+              backgroundColor: colors.fill,
               opacity: pressed ? 0.75 : 1,
               transform: [{ scale: pressed ? 0.92 : 1 }],
             },
@@ -180,7 +180,7 @@ export function PlannerCard({
               accessibilityRole="button"
               accessibilityLabel={departureLabel(departure)}
               onPress={() => setSheetOpen(true)}
-              style={[styles.departureChip, { backgroundColor: isDark ? '#303134' : '#F1F5F9' }]}
+              style={[styles.departureChip, { backgroundColor: colors.fill }]}
             >
               <Ionicons name="time-outline" size={15} color={iconColor} />
               <Text style={[styles.departureText, { color: colors.text }]}>
@@ -194,18 +194,19 @@ export function PlannerCard({
 
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={searchLabel}
             accessibilityState={{ disabled: !valid }}
             onPress={search}
             style={({ pressed }) => [
               styles.searchButton,
               {
-                backgroundColor: valid ? colors.primary : isDark ? '#303134' : '#E2E8F0',
+                backgroundColor: valid ? colors.primary : colors.fillDisabled,
                 opacity: pressed && valid ? 0.9 : 1,
               },
             ]}
           >
-            <Ionicons name="navigate" size={16} color={valid ? '#FFFFFF' : colors.textMuted} />
-            <Text numberOfLines={1} style={[styles.searchLabel, { color: valid ? '#FFFFFF' : colors.textMuted }]}>
+            <Ionicons name="navigate" size={16} color={valid ? colors.onPrimary : colors.textMuted} />
+            <Text numberOfLines={1} style={[styles.searchLabel, { color: valid ? colors.onPrimary : colors.textMuted }]}>
               {searchLabel}
             </Text>
           </Pressable>

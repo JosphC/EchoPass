@@ -4,7 +4,8 @@ import { t } from '../../../core/i18n';
 import { fontWeights, spacing } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 import type { SavedRoute } from '../../../services/api/schemas/trip';
-import { LineBadge } from '../../../ui';
+import { findRoute } from '../../../services/repositories/gtfs/timetable';
+import { LineBadge, ModeIcon } from '../../../ui';
 
 interface SavedRoutesProps {
   routes: SavedRoute[];
@@ -15,17 +16,23 @@ export function SavedRoutes({ routes }: SavedRoutesProps) {
 
   return (
     <View style={styles.root}>
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         {routes.map((r, idx) => (
           <View key={r.id}>
             {idx > 0 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
             <View style={styles.row}>
-              <Ionicons name="bus" size={20} color={colors.text} />
+              <ModeIcon mode={findRoute(r.line)?.mode} />
               <LineBadge shortName={r.line} />
               <View style={styles.info}>
-                <Text style={[styles.route, { color: colors.text }]}>
-                  {r.from} → {r.to}
-                </Text>
+                <View style={styles.routeRow}>
+                  <Text numberOfLines={1} style={[styles.route, styles.shrink, { color: colors.text }]}>
+                    {r.from}
+                  </Text>
+                  <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
+                  <Text numberOfLines={1} style={[styles.route, styles.shrink, { color: colors.text }]}>
+                    {r.to}
+                  </Text>
+                </View>
                 <Text style={[styles.meta, { color: colors.textMuted }]}>
                   {t('plan.line')} {r.line}
                 </Text>
@@ -44,14 +51,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   card: {
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   row: {
     flexDirection: 'row',
@@ -67,6 +68,14 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     gap: 3,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  shrink: {
+    flexShrink: 1,
   },
   route: {
     fontSize: 15.5,

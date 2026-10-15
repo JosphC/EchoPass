@@ -22,6 +22,7 @@ export function Segmented({ options, value, onChange, testID, variant = 'tabs' }
             <Pressable
               key={opt}
               accessibilityRole="tab"
+              accessibilityLabel={opt}
               accessibilityState={{ selected }}
               onPress={() => onChange(opt)}
               style={[styles.pillSlot, selected && [styles.pillActive, { backgroundColor: colors.surface }]]}
@@ -52,6 +53,7 @@ export function Segmented({ options, value, onChange, testID, variant = 'tabs' }
           <Pressable
             key={opt}
             accessibilityRole="tab"
+              accessibilityLabel={opt}
             accessibilityState={{ selected }}
             onPress={() => onChange(opt)}
             style={styles.tabSlot}
@@ -112,11 +114,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pillActive: {
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
   pillLabel: {
     fontSize: fontSizes.sm,

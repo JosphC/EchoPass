@@ -32,6 +32,7 @@ export function CenteredTabBar({ state, descriptors, navigation }: CenteredTabBa
           <Pressable
             key={route.key}
             accessibilityRole="button"
+            accessibilityLabel={label}
             accessibilityState={{ selected: focused }}
             onPress={() => navigation.navigate(route.name)}
             style={styles.slot}

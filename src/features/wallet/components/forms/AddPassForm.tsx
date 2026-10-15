@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { t } from '../../../../core/i18n';
-import { fontSizes, radius, spacing } from '../../../../core/theme';
+import { fontSizes, spacing } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
 import { Button } from '../../../../ui';
 import type { PassTheme } from '../../types';
@@ -20,14 +20,17 @@ export function AddPassForm({ onSubmit, onDone }: AddPassFormProps) {
   const [busy, setBusy] = useState(false);
 
   async function submit(): Promise<void> {
-    if (name.trim().length === 0 || holder.trim().length === 0 || !/^\d{4}-\d{2}-\d{2}$/.test(validUntil)) {
+    // Typed as ZZ.LL.AAAA (Romanian), stored as ISO; ISO input is still accepted.
+    const ro = validUntil.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    const iso = ro ? `${ro[3]}-${ro[2]}-${ro[1]}` : validUntil.trim();
+    if (name.trim().length === 0 || holder.trim().length === 0 || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
       setError(t('wallet.invalidPass'));
       return;
     }
     setError(null);
     setBusy(true);
     try {
-      await onSubmit({ name: name.trim(), holder: holder.trim(), validUntil, lines: 'all', theme: 'ocean' });
+      await onSubmit({ name: name.trim(), holder: holder.trim(), validUntil: iso, lines: 'all', theme: 'ocean' });
       onDone();
     } finally {
       setBusy(false);
@@ -41,21 +44,21 @@ export function AddPassForm({ onSubmit, onDone }: AddPassFormProps) {
         onChangeText={setName}
         placeholder={t('wallet.passName')}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       <TextInput
         value={holder}
         onChangeText={setHolder}
         placeholder={t('wallet.passHolder')}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       <TextInput
         value={validUntil}
         onChangeText={setValidUntil}
         placeholder={t('wallet.passValidUntil')}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill }]}
       />
       {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
       <Button title={t('wallet.addPass')} loading={busy} onPress={() => void submit()} />
@@ -68,8 +71,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderRadius: 14,
     paddingHorizontal: spacing.lg,
     minHeight: 48,
     fontSize: fontSizes.md,

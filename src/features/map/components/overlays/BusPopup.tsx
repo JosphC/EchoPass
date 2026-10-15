@@ -56,7 +56,7 @@ function PressableClose({ onClose }: { onClose: () => void }) {
     <View style={styles.closeRow}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Close"
+        accessibilityLabel={t('common.close')}
         onPress={onClose}
         hitSlop={8}
         style={styles.closeHit}
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     shadowColor: '#111827',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.12,
     shadowRadius: 4,
   },
   closeRow: {

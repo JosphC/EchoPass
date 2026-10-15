@@ -33,8 +33,8 @@ export function TopUpSheet({
   return (
     <BottomSheet visible={visible} onClose={onClose} testID="topup-sheet">
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: '#ECFDF5' }]}>
-          <Ionicons name="wallet-outline" size={24} color="#059669" />
+        <View style={[styles.avatar, { backgroundColor: colors.primarySoft }]}>
+          <Ionicons name="wallet-outline" size={24} color={colors.primary} />
         </View>
         <View style={styles.headerTexts}>
           <Text style={[styles.title, { color: colors.text }]}>{t('wallet.topUpTitle')}</Text>
@@ -43,7 +43,7 @@ export function TopUpSheet({
       </View>
 
       {/* Balance Box */}
-      <View style={[styles.balanceCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.balanceCard, { backgroundColor: colors.fill }]}>
         <Text style={[styles.balanceLabel, { color: colors.textMuted }]}>{t('wallet.balance')}</Text>
         <Text style={[styles.balanceValue, { color: colors.text }]}>{balanceRon.toFixed(2)} Lei</Text>
       </View>
@@ -62,15 +62,14 @@ export function TopUpSheet({
               style={[
                 styles.chip,
                 {
-                  backgroundColor: isSelected ? colors.primary : colors.surface,
-                  borderColor: isSelected ? colors.primary : colors.border,
+                  backgroundColor: isSelected ? colors.primary : colors.fill,
                 },
               ]}
             >
               <Text
                 style={[
                   styles.chipText,
-                  { color: isSelected ? '#FFFFFF' : colors.text, fontWeight: isSelected ? fontWeights.bold : fontWeights.medium },
+                  { color: isSelected ? colors.onPrimary : colors.text, fontWeight: isSelected ? fontWeights.bold : fontWeights.medium },
                 ]}
               >
                 +{amount} Lei
@@ -103,11 +102,11 @@ const styles = StyleSheet.create({
   headerTexts: { flex: 1, gap: 2 },
   title: { fontSize: fontSizes.lg, fontWeight: fontWeights.bold },
   sub: { fontSize: fontSizes.sm },
-  balanceCard: { borderRadius: radius.md, borderWidth: 1, padding: spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  balanceCard: { borderRadius: 16, padding: spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   balanceLabel: { fontSize: fontSizes.sm },
   balanceValue: { fontSize: fontSizes.lg, fontWeight: fontWeights.bold },
   chipsRow: { flexDirection: 'row', gap: spacing.sm },
-  chip: { flex: 1, paddingVertical: spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, borderWidth: 1 },
+  chip: { flex: 1, paddingVertical: spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: 999 },
   chipText: { fontSize: fontSizes.sm },
   sourceBox: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: spacing.sm, borderRadius: radius.sm },
   sourceText: { fontSize: fontSizes.xs },

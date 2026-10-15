@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { fontSizes, fontWeights, spacing } from '../../core/theme';
+import { t } from '../../core/i18n';
 import { useTheme } from '../../core/theme/useTheme';
 import { ChevronLeft } from '../ChevronLeft/ChevronLeft';
 
@@ -21,7 +22,7 @@ export function ScreenHeader({ title, subtitle, onBack, actionLabel, onAction, c
     <View style={styles.root}>
       <View style={styles.row}>
         {onBack ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} style={styles.back}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} onPress={onBack} style={styles.back}>
             <View style={styles.backIcon}>
               <ChevronLeft size={22} />
             </View>
@@ -33,7 +34,7 @@ export function ScreenHeader({ title, subtitle, onBack, actionLabel, onAction, c
         </View>
         {right ? <View style={styles.side}>{right}</View> : null}
         {actionLabel && onAction ? (
-          <Pressable accessibilityRole="button" onPress={onAction} style={styles.action}>
+          <Pressable accessibilityRole="button" accessibilityLabel={actionLabel} onPress={onAction} style={styles.action}>
             <Text style={[styles.actionLabel, { color: colors.primary }]}>{actionLabel}</Text>
           </Pressable>
         ) : null}

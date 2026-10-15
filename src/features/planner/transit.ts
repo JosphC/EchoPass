@@ -20,6 +20,9 @@ export interface TransitLeg {
   toStation?: Station | null;
   /** Scheduled headsign (direction, e.g. "Holdelor"), when known. */
   headsign?: string | null;
+  /** Ride legs: scheduled boarding time (ms) and the stops passed on the way. */
+  departMs?: number;
+  via?: Station[];
 }
 
 export interface TransitOption {
@@ -58,6 +61,11 @@ export type DestinationTarget =
       coords: LatLng | null;
       name?: string;
     };
+
+/** Transfer stop next to the destination: riding on and walking back makes no sense. */
+function transfersAtDestination(opt: TransitOption, dest: LatLng | null): boolean {
+  return opt.transferStation != null && dest != null && haversineKm(opt.transferStation, dest) < 0.15;
+}
 
 /**
  * Multimodal transit routing: walking to nearest stop, live buses, transfers,
@@ -134,7 +142,7 @@ export function planTransit(
         }
         for (const second of dCandidate.lines) {
           const opt = buildTransferOption(board, walk, first, second, dCandidate, destCoords, destName, markers, nowMs);
-          if (opt && !found.has(opt.id)) found.set(opt.id, opt);
+          if (opt && !found.has(opt.id) && !transfersAtDestination(opt, destStation ?? destCoords)) found.set(opt.id, opt);
         }
       }
     }

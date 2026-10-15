@@ -1,5 +1,6 @@
 import { env } from '../core/config';
 import { createMockRepositories } from './repositories/mock';
+import { createArrivalsMock } from './repositories/mock/arrivalsMock';
 import { createStptBusRepo } from './repositories/real/busRepo';
 import { createRealRepositories } from './repositories/real/stubs';
 import type { Repositories } from './repositories/types';
@@ -24,7 +25,11 @@ export function getRepositories(): Repositories {
       cached = createRealRepositories();
     } else {
       cached = createMockRepositories();
-      if (env.useRealBus) cached.bus = createStptBusRepo();
+      if (env.useRealBus) {
+        cached.bus = createStptBusRepo();
+        // Stop boards follow the same live fleet the map shows.
+        cached.arrivals = createArrivalsMock(cached.bus);
+      }
     }
   }
   return cached;

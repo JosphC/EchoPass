@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { t } from '../../../../core/i18n';
 import { fontWeights } from '../../../../core/theme';
@@ -32,6 +33,8 @@ export function DepartureRow({ item, onPress }: DepartureRowProps) {
     delayedMin === 0 && predictedMs !== null && scheduledMs !== null && predictedMs < scheduledMs - 60_000
       ? Math.round((scheduledMs - predictedMs) / 60_000)
       : 0;
+  // Google Maps: realtime minutes green when on time, red when late; timetable ones plain.
+  const etaColor = !arrival.isRealtime ? colors.text : delayedMin > 0 ? colors.danger : colors.success;
   const source = arrival.isRealtime ? t('home.tripLive') : t('home.tripScheduled');
   const talkback = `Linia ${arrival.route.shortName} spre ${arrival.headsign}, ${
     isNow ? t('live.now') : `${t('home.after')} ${minutesLeft} ${minuteWord(minutesLeft)}`
@@ -74,10 +77,17 @@ export function DepartureRow({ item, onPress }: DepartureRowProps) {
         )}
       </View>
       {isNow ? (
-        <Text style={[styles.now, { color: colors.success }]}>{t('live.now')}</Text>
+        <Text style={[styles.now, { color: etaColor }]}>{t('live.now')}</Text>
       ) : (
         <View style={styles.eta}>
-          <Text style={[styles.etaNumber, { color: colors.text }]}>{minutesLeft}</Text>
+          <View style={styles.etaTop}>
+            {arrival.isRealtime ? (
+              <Ionicons name="radio-outline" size={12} color={etaColor} testID="departure-live" />
+            ) : null}
+            <Text style={[styles.etaNumber, { color: etaColor }]}>
+              {minutesLeft}
+            </Text>
+          </View>
           <Text style={[styles.etaUnit, { color: colors.textMuted }]}>{t('common.min')}</Text>
         </View>
       )}
@@ -114,6 +124,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
     minWidth: 38,
+  },
+  etaTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 2,
   },
   etaNumber: {
     fontSize: 22,

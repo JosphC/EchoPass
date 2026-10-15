@@ -1,5 +1,6 @@
 import { haversineKm, loadStations, type LatLng, type Station } from '../map';
 import type { BusMarker } from '../map';
+import { SINGLE_FARE_RON, TICKET_VALIDITY_MIN } from '../../core/config';
 import {
   findAnyForwardTrip,
   findForwardRides,
@@ -15,9 +16,19 @@ export const BUS_KMH = 18;
 export const WALK_ROAD_FACTOR = 1.3;
 export const TRANSFER_MIN = 3;
 export const HEADWAY_MIN = 8;
-export const FARE_PER_RIDE = 3;
+export const FARE_PER_RIDE = SINGLE_FARE_RON;
 export const MAX_OPTIONS = 3;
 export const MAX_BOARD_STATIONS = 5;
+
+/**
+ * Biletul cu timp acoperă toate îmbarcările din fereastra de valabilitate:
+ * a doua urcare în ≤60 min de la prima validare circulă pe același bilet.
+ */
+export function transferFareRon(firstBoardMs: number, secondBoardMs: number): number {
+  return secondBoardMs - firstBoardMs > TICKET_VALIDITY_MIN * 60_000
+    ? SINGLE_FARE_RON * 2
+    : SINGLE_FARE_RON;
+}
 
 export function walkMin(a: LatLng, b: LatLng): number {
   // Straight-line distance underestimates real footpaths (detours, crossings);
@@ -311,6 +322,8 @@ export function buildDirectOption(
     fromStation: board,
     toStation: alight,
     headsign: timed?.headsign ?? null,
+    departMs: nowMs + ((walk?.minutes ?? 0) + wait.minutes) * 60_000,
+    via: timed != null ? tripViaStations(timed.tripIdx, timed.boardSec, timed.alightSec) : undefined,
   };
   const lastWalk = destCoords ? maybeWalk(alight, alight.name, destCoords, destName) : null;
   const legs = [walk, ride, lastWalk].filter((l): l is TransitLeg => l !== null);
@@ -326,7 +339,7 @@ export function buildDirectOption(
     transferStation: null,
     alightStation: alight,
     headsign: timed?.headsign ?? null,
-    viaStations: timed != null ? tripViaStations(timed.tripIdx, timed.boardSec, timed.alightSec) : undefined,
+    viaStations: ride.via,
     shapeLegs: timed != null ? [{ tripIdx: timed.tripIdx, boardId: board.id, alightId: alight.id }] : undefined,
     estimated: timed?.upcomingWaitMin == null,
   };
@@ -440,8 +453,12 @@ function buildTransferVia(
   const lastWalk = destCoords ? maybeWalk(alight, alight.name, destCoords, destName) : null;
   const legs = [walk, ride1, ride2, lastWalk].filter((l): l is TransitLeg => l !== null);
   const total = walkMinutes + wait1 + ride1Min + TRANSFER_MIN + wait2 + ride2Min + (lastWalk?.minutes ?? 0);
+  const firstBoardMs = nowMs + (walkMinutes + wait1) * 60_000;
+  const secondBoardMs = arrive1Ms + TRANSFER_MIN * 60_000 + wait2 * 60_000;
   const via1 = leg1Timed ? tripViaStations(leg1Timed.tripIdx, leg1Timed.boardSec, leg1Timed.alightSec) : [];
   const via2 = leg2Timed ? tripViaStations(leg2Timed.tripIdx, leg2Timed.boardSec, leg2Timed.alightSec) : [];
+  Object.assign(ride1, { departMs: firstBoardMs, via: via1 });
+  Object.assign(ride2, { departMs: secondBoardMs, via: via2 });
   const upcoming = leg1Timed?.upcomingWaitMin != null && leg2Timed?.upcomingWaitMin != null;
   const shapeLegs: { tripIdx: number; boardId: string; alightId: string }[] = [];
   if (leg1Timed) shapeLegs.push({ tripIdx: leg1Timed.tripIdx, boardId: board.id, alightId: change.id });
@@ -450,7 +467,7 @@ function buildTransferVia(
     id: `t-${first}-${second}-${board.id}-${change.id}-${alight.id}`,
     legs,
     totalMin: total,
-    fareRon: FARE_PER_RIDE * 2,
+    fareRon: transferFareRon(firstBoardMs, secondBoardMs),
     crowd:
       approaching1 && (leg1Timed?.upcomingWaitMin == null || approaching1.minutes <= leg1Timed.upcomingWaitMin)
         ? approaching1.crowd

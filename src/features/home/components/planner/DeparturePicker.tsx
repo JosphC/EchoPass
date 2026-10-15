@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { t } from '../../../../core/i18n';
-import { fontSizes, radius, spacing } from '../../../../core/theme';
+import { fontSizes, spacing } from '../../../../core/theme';
 import { useTheme } from '../../../../core/theme/useTheme';
 import { BottomSheet } from '../../../../ui';
 
@@ -59,6 +59,7 @@ export function DeparturePicker({ visible, value, onChange, onClose }: Departure
         <Pressable
           key={mode}
           accessibilityRole="radio"
+          accessibilityLabel={modeLabel(mode)}
           accessibilityState={{ selected: value.mode === mode }}
           onPress={() => pick(mode)}
           style={styles.row}
@@ -81,7 +82,7 @@ export function DeparturePicker({ visible, value, onChange, onClose }: Departure
         placeholderTextColor={colors.textMuted}
         keyboardType="numbers-and-punctuation"
         maxLength={5}
-        style={[styles.input, { color: colors.text, borderColor: error ? colors.danger : colors.border }]}
+        style={[styles.input, { color: colors.text, backgroundColor: colors.fill, borderColor: error ? colors.danger : colors.fill }]}
       />
       {error ? <Text style={[styles.error, { color: colors.danger }]}>{t('home.invalidTime')}</Text> : null}
     </BottomSheet>
@@ -99,8 +100,8 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.md,
   },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderRadius: 14,
     paddingHorizontal: spacing.lg,
     minHeight: 48,
     fontSize: fontSizes.md,

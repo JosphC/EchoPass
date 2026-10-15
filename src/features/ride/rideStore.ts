@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { formatTransitTime } from '../../core/utils/timezone';
 
 export interface DetectedVehicle {
   line: string;
@@ -101,7 +102,7 @@ export const useRideStore = create<RideState>()((set, get) => ({
     const origLine = activeTicket?.originalLine ?? '15';
     const passengers = activeTicket?.passengers ?? 1;
     const chargeId = activeTicket?.chargeId ?? `transfer-${Date.now()}`;
-    const startedAt = new Date(nowMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const startedAt = formatTransitTime(nowMs);
 
     set({
       status: 'active',

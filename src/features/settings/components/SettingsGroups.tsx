@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { t } from '../../../core/i18n';
-import { fontSizes, fontWeights, spacing } from '../../../core/theme';
+import { fontWeights, spacing } from '../../../core/theme';
 import { useTheme } from '../../../core/theme/useTheme';
 import { ListItem, Toast, Toggle } from '../../../ui';
 import { useSettings, type SettingsKey } from '../hooks/useSettings';
@@ -17,7 +17,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View style={styles.section}>
       <Text style={[styles.heading, { color: colors.textMuted }]}>{title}</Text>
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         {children}
       </View>
     </View>
@@ -53,7 +53,7 @@ export function SettingsGroups({ onEditProfile }: { onEditProfile: () => void })
     { kind: 'toggle', icon: 'card-outline', label: t('settings.askBeforeCharge'), toggleKey: 'askBeforeCharge' },
   ];
 
-  const renderRow = (row: Row, key: string) =>
+  const renderRow = (row: Row, key: string, divider: boolean) =>
     row.kind === 'toggle' ? (
       <Toggle
         key={key}
@@ -61,30 +61,30 @@ export function SettingsGroups({ onEditProfile }: { onEditProfile: () => void })
         label={row.label}
         value={settings[row.toggleKey]}
         onValueChange={() => settings.toggle(row.toggleKey)}
+        divider={divider}
       />
     ) : (
-      <ListItem key={key} icon={icon(row.icon)} title={row.label} onPress={row.onPress} />
+      <ListItem key={key} icon={icon(row.icon)} title={row.label} onPress={row.onPress} divider={divider} />
     );
+  const rows = (list: Row[], prefix: string) => list.map((r, i) => renderRow(r, `${prefix}-${i}`, i < list.length - 1));
 
   return (
     <View>
       <Section title={t('settings.account')}>
-        {account.map((r, i) => renderRow(r, `a-${i}`))}
+        {rows(account, 'a')}
       </Section>
       <Section title={t('settings.notificationsGroup')}>
-        {notifications.map((r, i) => renderRow(r, `n-${i}`))}
+        {rows(notifications, 'n')}
       </Section>
       <Section title={t('settings.privacyGroup')}>
-        {privacy.map((r, i) => renderRow(r, `p-${i}`))}
+        {rows(privacy, 'p')}
       </Section>
       <Section title={t('settings.appPrefs')}>
-        <ListItem icon={icon('moon-outline')} title={t('settings.appearance')} onPress={soonPress} />
+        <ListItem icon={icon('moon-outline')} title={t('settings.appearance')} onPress={soonPress} divider={false} />
       </Section>
       <Section title={t('settings.payments')}>
-        {payments.map((r, i) => renderRow(r, `pay-${i}`))}
+        {rows(payments, 'pay')}
       </Section>
-      <Text style={[styles.micTitle, { color: colors.text }]}>{t('settings.micTitle')}</Text>
-      <Text style={[styles.micBody, { color: colors.textMuted }]}>{t('settings.micBody')}</Text>
       {soon ? <Toast message={t('common.soon')} tone="info" /> : null}
     </View>
   );
@@ -96,29 +96,13 @@ const styles = StyleSheet.create({
   },
   heading: {
     marginBottom: 6,
-    marginLeft: 6,
-    fontSize: 12.5,
-    fontWeight: fontWeights.semiBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    marginLeft: 4,
+    fontSize: 13,
+    fontWeight: fontWeights.medium,
   },
   card: {
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 16,
+    borderRadius: 24,
+    paddingHorizontal: 18,
     paddingVertical: 2,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  micTitle: {
-    marginTop: spacing.md,
-    fontSize: fontSizes.md,
-  },
-  micBody: {
-    marginTop: spacing.xs,
-    fontSize: fontSizes.sm,
   },
 });

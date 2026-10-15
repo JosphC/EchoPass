@@ -14,12 +14,15 @@ export default function SettingsTab() {
   return (
     <Screen scroll>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Ionicons name="settings-outline" size={22} color={colors.primary} />
-          <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
-        </View>
-        <Pressable accessibilityRole="button" onPress={() => router.push('/plan')} style={[styles.tool, { backgroundColor: colors.card }]}>
-          <Ionicons name="search-outline" size={20} color={colors.primary} />
+        <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('live.searchMap')}
+          onPress={() => router.push('/plan')}
+          hitSlop={8}
+          style={styles.tool}
+        >
+          <Ionicons name="search-outline" size={22} color={colors.primary} />
         </Pressable>
       </View>
       <SettingsGroups onEditProfile={() => router.push('/profile')} />
@@ -34,11 +37,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.md,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
   title: {
     fontSize: 24,
     fontWeight: fontWeights.bold,
@@ -47,13 +45,7 @@ const styles = StyleSheet.create({
   tool: {
     width: 42,
     height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
   },
 });

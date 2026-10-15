@@ -59,6 +59,7 @@ export function LiveTabView({ live, onNotifications }: LiveTabViewProps) {
           popupTracked={trackedId === live.selected?.bus.id}
           onTrackPopup={() => live.track(trackedId === live.selected?.bus.id ? null : (live.selected?.bus.id ?? null))}
           onClosePopup={() => live.select(null)}
+          onStationPress={handlePickStation}
         />
         <StationBar
           station={live.station}

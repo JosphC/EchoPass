@@ -33,7 +33,7 @@ export function LineFilterRow({ lines, selected, onToggle, onClear }: LineFilter
         onPress={onClear}
         style={[styles.all, { backgroundColor: !filtering ? colors.primary : 'transparent', borderColor: !filtering ? colors.primary : colors.border }]}
       >
-        <Text style={[styles.allText, { color: !filtering ? '#FFFFFF' : colors.text }]}>{t('home.all')}</Text>
+        <Text style={[styles.allText, { color: !filtering ? colors.onPrimary : colors.text }]}>{t('home.all')}</Text>
       </Pressable>
       {lines.map((line) => {
         const chosen = filtering && selected.includes(line.shortName);
@@ -52,7 +52,7 @@ export function LineFilterRow({ lines, selected, onToggle, onClear }: LineFilter
             <LineBadge shortName={line.shortName} color={line.color} textColor={line.textColor} />
             {chosen ? (
               <View style={[styles.check, { backgroundColor: colors.primary }]}>
-                <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+                <Ionicons name="checkmark" size={12} color={colors.onPrimary} />
               </View>
             ) : null}
           </Pressable>

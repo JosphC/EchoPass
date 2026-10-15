@@ -10,12 +10,14 @@ interface ListItemProps {
   icon?: ReactNode;
   onPress?: () => void;
   testID?: string;
+  /** Hairline under the row; pass false for the last row of a grouped card. */
+  divider?: boolean;
 }
 
-export function ListItem({ title, subtitle, icon, onPress, testID }: ListItemProps) {
+export function ListItem({ title, subtitle, icon, onPress, testID, divider = true }: ListItemProps) {
   const { colors } = useTheme();
   const Inner = (
-    <View style={[styles.root, { borderBottomColor: colors.border }]}>
+    <View style={[styles.root, divider && { borderBottomColor: colors.border, borderBottomWidth: StyleSheet.hairlineWidth }]}>
       {icon ? <View style={styles.icon}>{icon}</View> : null}
       <View style={styles.texts}>
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
@@ -27,7 +29,13 @@ export function ListItem({ title, subtitle, icon, onPress, testID }: ListItemPro
 
   if (!onPress) return <View testID={testID}>{Inner}</View>;
   return (
-    <Pressable testID={testID} accessibilityRole="button" onPress={onPress} style={styles.pressable}>
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
+      onPress={onPress}
+      style={styles.pressable}
+    >
       {Inner}
     </Pressable>
   );
@@ -41,8 +49,8 @@ const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.md,
     paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   texts: {
     flex: 1,

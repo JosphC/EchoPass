@@ -12,7 +12,7 @@ interface LocateButtonProps {
 
 /** Google Maps style "my location" FAB: white circle docked above the sheet. */
 export function LocateButton({ onPress, style, active = false }: LocateButtonProps) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <Pressable
@@ -21,11 +21,11 @@ export function LocateButton({ onPress, style, active = false }: LocateButtonPro
       onPress={onPress}
       style={({ pressed }) => [
         styles.locate,
-        { backgroundColor: colors.card, opacity: pressed ? 0.82 : 1 },
+        { backgroundColor: colors.chip, opacity: pressed ? 0.82 : 1 },
         style ?? styles.defaultPos,
       ]}
     >
-      <Ionicons name={active ? 'locate-sharp' : 'locate-outline'} size={24} color={active ? '#1A73E8' : colors.textMuted} />
+      <Ionicons name={active ? 'locate-sharp' : 'locate-outline'} size={24} color={active || isDark ? colors.primary : colors.textMuted} />
     </Pressable>
   );
 }
@@ -37,10 +37,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
+    elevation: 4,
     shadowColor: '#111827',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.28,
+    shadowOpacity: 0.12,
     shadowRadius: 6,
   },
   defaultPos: {

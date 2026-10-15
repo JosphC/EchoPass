@@ -24,25 +24,27 @@ export function TripRow({ trip }: TripRowProps) {
 
   return (
     <View style={styles.row}>
+      {/* Same as the Explorează board: mode glyph, then the line badge. */}
       <View style={styles.badgeWrap}>
-        <ModeIcon mode={route?.mode} size={18} color={colors.text} />
+        <ModeIcon mode={route?.mode} />
         {trip.line ? (
-          <LineBadge
-            shortName={trip.line}
-            color={route?.color ?? undefined}
-            textColor={route?.textColor ?? undefined}
-            size="sm"
-          />
+          <LineBadge shortName={trip.line} color={route?.color ?? undefined} textColor={route?.textColor ?? undefined} />
         ) : (
           <View style={[styles.fallback, { backgroundColor: colors.primary }]}>
-            <Ionicons name="bus-outline" size={14} color="#FFFFFF" />
+            <Ionicons name="bus-outline" size={14} color={colors.onPrimary} />
           </View>
         )}
       </View>
       <View style={styles.info}>
-        <Text numberOfLines={1} style={[styles.route, { color: colors.text }]}>
-          {trip.from} → {trip.to}
-        </Text>
+        <View style={styles.routeRow}>
+          <Text numberOfLines={1} style={[styles.route, styles.routeFrom, { color: colors.text }]}>
+            {trip.from}
+          </Text>
+          <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
+          <Text numberOfLines={1} style={[styles.route, styles.routeTo, { color: colors.text }]}>
+            {trip.to}
+          </Text>
+        </View>
         <Text style={[styles.meta, { color: colors.textMuted }]}>{meta}</Text>
       </View>
       <View style={styles.side}>
@@ -58,12 +60,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
   },
   badgeWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 10,
   },
   fallback: {
     width: 28,
@@ -76,9 +78,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   route: {
     fontSize: 15.5,
     fontWeight: fontWeights.bold,
+  },
+  routeFrom: {
+    flexShrink: 1,
+  },
+  routeTo: {
+    flexShrink: 2,
   },
   meta: {
     fontSize: 12.5,

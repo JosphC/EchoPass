@@ -16,7 +16,7 @@ export function Toast({ message, tone = 'info', testID }: ToastProps) {
 
   return (
     <View testID={testID} accessibilityRole="alert" style={[styles.root, { backgroundColor: bg }]}>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={[styles.message, { color: colors.onPrimary }]}>{message}</Text>
     </View>
   );
 }
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   message: {
-    color: '#FFFFFF',
     fontSize: fontSizes.sm,
   },
 });

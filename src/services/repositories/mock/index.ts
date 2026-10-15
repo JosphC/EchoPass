@@ -7,12 +7,13 @@ import { createTripMock } from './tripMock';
 import { createWalletRepoMock } from './walletRepo.mock';
 
 export function createMockRepositories(): Repositories {
+  const bus = createBusMock();
   return {
     wallet: createWalletRepoMock(),
-    bus: createBusMock(),
+    bus,
     report: createReportMock(),
     trip: createTripMock(),
     notification: createNotificationMock(),
-    arrivals: createArrivalsMock(),
+    arrivals: createArrivalsMock(bus),
   };
 }

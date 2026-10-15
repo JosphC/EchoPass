@@ -18,6 +18,29 @@ interface RouteOptionsProps {
   onSelect?: (option: TransitOption) => void;
 }
 
+export interface GroupedOption {
+  option: TransitOption;
+  /** Other lines doing the same stops in the same time (Google: "14 / 18 / M14"). */
+  altLines: string[];
+}
+
+/**
+ * Merges direct options that differ only by line (same stops, same walk/ride
+ * minutes); the first one — the fastest, options come sorted — leads the row.
+ */
+export function groupSameStops(options: TransitOption[]): GroupedOption[] {
+  const groups = new Map<string, GroupedOption>();
+  options.forEach((option, i) => {
+    const key = option.transferStation
+      ? `single-${i}`
+      : [option.boardStation.id, option.alightStation.id, ...option.legs.map((l) => `${l.kind}${l.minutes}`)].join('|');
+    const group = groups.get(key);
+    if (group) group.altLines.push(option.line);
+    else groups.set(key, { option, altLines: [] });
+  });
+  return [...groups.values()];
+}
+
 /** Real transit options: walk to the stop, ride, transfer when needed, walk to destination. */
 export function RouteOptions({
   options: optionsProp,
@@ -53,12 +76,13 @@ export function RouteOptions({
     <View style={styles.section}>
       {!hideTitle && <Text style={[styles.heading, { color: colors.text }]}>{t('home.routes')}</Text>}
       <View style={styles.list}>
-        {options.map((option, i) => {
+        {groupSameStops(options).map(({ option, altLines }, i) => {
           const isSelected = currentSelectedId ? currentSelectedId === option.id : i === 0;
           return (
             <RouteOptionRow
               key={option.id}
               option={option}
+              altLines={altLines}
               index={i}
               selected={isSelected}
               onPress={() => {

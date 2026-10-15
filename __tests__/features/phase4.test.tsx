@@ -58,7 +58,7 @@ describe('phase 4 screens', () => {
 
   it('notifications group by day and mark read on open', async () => {
     const screen = renderWithClient(<NotificationsRoute />);
-    expect(await screen.findByText(/Plata calatorie/)).toBeTruthy();
+    expect(await screen.findByText(/Plata călătoriei/)).toBeTruthy();
     expect((await screen.findAllByText(/Azi|Ieri|Mai vechi/)).length).toBeGreaterThan(0);
   });
 

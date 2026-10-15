@@ -51,7 +51,7 @@ export function StationField({
   onSearchStateChange,
   onSearch,
 }: StationFieldProps) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const [results, setResults] = useState<LocationPlace[]>([]);
@@ -103,9 +103,10 @@ export function StationField({
     onSearchStateChange?.({ results, typing, query });
   }, [results, typing, query, onSearchStateChange]);
 
-  const borderColor = focused ? colors.primary : isDark ? '#3C4043' : '#E2E8F0';
-  const boxBg = isDark ? '#303134' : '#F8FAFC';
-  const placeholderColor = isDark ? '#9AA0A6' : '#94A3B8';
+  const boxBg = colors.fill;
+  // Filled field without an outline; only the focus ring is drawn.
+  const borderColor = focused ? colors.primary : boxBg;
+  const placeholderColor = colors.placeholder;
 
   function pick(next: Station | LocationPlace): void {
     if (blurTimer.current) clearTimeout(blurTimer.current);
@@ -163,7 +164,7 @@ export function StationField({
             hitSlop={12}
             style={styles.actionBtn}
           >
-            <Ionicons name={locating ? 'hourglass-outline' : 'locate'} size={18} color="#4285F4" />
+            <Ionicons name={locating ? 'hourglass-outline' : 'locate'} size={18} color={colors.primary} />
           </Pressable>
         ) : null}
         {trailing}
@@ -180,8 +181,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 14,
+    borderWidth: 1.5,
     paddingHorizontal: 12,
     gap: 10,
   },

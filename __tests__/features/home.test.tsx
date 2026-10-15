@@ -303,7 +303,7 @@ describe('home screen', () => {
     const onOpen = jest.fn();
     const screen = renderWithClient(<RouteOptions origin={from} originCoords={null} destination={to} onOpen={onOpen} />);
     expect(await screen.findByText('Rute')).toBeTruthy();
-    const fares = await screen.findAllByText('3,00 lei');
+    const fares = await screen.findAllByText(/3,00 lei/);
     expect(fares.length).toBeGreaterThan(0);
     fireEvent.press(fares[0]);
     expect(onOpen).toHaveBeenCalledTimes(1);
@@ -321,6 +321,6 @@ describe('home screen', () => {
         onTrackBus={jest.fn()}
       />,
     );
-    expect(await screen.findByText('Nicio sosire în următoarele 60 de minute')).toBeTruthy();
+    expect(await screen.findByText('Nicio sosire în următoarele 2 ore')).toBeTruthy();
   });
 });
